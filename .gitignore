@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+#project
+project/local_setting.py
+entrypoint.sh
+docker-compose.yml
