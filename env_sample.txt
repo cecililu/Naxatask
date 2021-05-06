@@ -1,14 +1,14 @@
 #Change env_sample.txt to env.txt (or as mentioned in docker-compose.yml)
-
+# Docker
+COMPOSE_PROJECT_NAME=django_template
 # DEBUG=1
-# SECRET_KEY=xyggedefsdfsdf&g3v(i0+s^*3y
-# SQL_ENGINE=django.contrib.gis.db.backends.postgis
-# POSTGRES_PASSWORD=postgres
-# COMPOSE_PROJECT_NAME=backend-templete
-# POSTGRES_USER=postgres
-# POSTGRES_DB=postgres
-# POSTGRES_HOST=db
-# POSTGRES_PORT=5432
+ SECRET_KEY=xyggedefsdfsdf&g3v(i0+s^*3y
+ SQL_ENGINE=django.contrib.gis.db.backends.postgis
+ POSTGRES_PASSWORD=sumit
+ POSTGRES_USER=sumit
+ POSTGRES_DB=django_temp
+ POSTGRES_HOST=192.168.10.107
+ POSTGRES_PORT=5432
 # EMAIL_HOST_USER=backend.project@gmail.com
 # EMAIL_HOST_PASSWORD=project@123
 # CELERY_BROKER_URL=redis://redis//
