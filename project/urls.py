@@ -21,6 +21,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_view
+from rest_framework.authtoken import views
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -35,6 +36,7 @@ urlpatterns = [
     path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('login/', auth_view.LoginView.as_view(), name='login'),
     path('logout/', auth_view.LogoutView.as_view(), name='logout'),
+    path('api-token/', views.obtain_auth_token),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
