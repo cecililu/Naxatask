@@ -133,3 +133,5 @@ dmypy.json
 project/local_setting.py
 entrypoint.sh
 docker-compose.yml
+postgres-data/
+/static/
