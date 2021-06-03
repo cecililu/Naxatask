@@ -1,3 +1,35 @@
+# Environments
+.env_pg
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+pg_env.txt
+geoserver_env.txt
+env_sample.txt
+
+
+#project
+geoserver-data/
+project/local_setting.py
+entrypoint.sh
+docker-compose.yml
+external_services.yml
+postgres-data/
+/static/
+static
+logs
+logs/
+sock/
+media/
+media
+frontend_app/
+dist/
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -101,15 +133,6 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
 # Spyder project settings
 .spyderproject
 .spyproject
@@ -128,10 +151,3 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-
-#project
-project/local_setting.py
-entrypoint.sh
-docker-compose.yml
-postgres-data/
-/static/
