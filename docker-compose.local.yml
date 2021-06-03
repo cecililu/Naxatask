@@ -2,10 +2,11 @@ version: '3'
 
 services:
   web:
-    env_file: env.txt   # Change env_sample.txt to env.txt
+    env_file: .env   # Change env_sample.txt to env.txt
     build:
       context: .
       dockerfile: Dockerfile
+    restart: always
     volumes:
       - .:/code
     ports:
