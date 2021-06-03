@@ -12,17 +12,21 @@ Install [docker](https://docs.docker.com/engine/install/) and [docker-compose](h
 Create a local copy of `docker-compose.local.yml` on your machine. 
 
 ```sh
-$ cp docker-compose.local.yml docker-compose.yml
+$ 
 ```
 Similarly create `entrypoint.sh` by copying the sample entrypoint script.
 
 ```sh
 $ cp docker-entrypoint.local.sh entrypoint.sh
 ```
-Also make a copy of `env_sample.txt` to `env.txt` and use it for setting environment variables for your project. 
 
-    $ cp env_sample.txt env.txt
-    $ nano env.txt			    # Edit env.txt and set environment variables for django project
+    $ cp external_services_sample.yml  external_services.yml
+    $ nano external_services.yml		    # Edit external_services.yml and set environment variables for django project
+
+
+Also make a copy of `env_sample` to `.env` and use it for setting environment variables for your project. 
+    $ cp env_sample .env
+    $ nano .env			    # Edit .env and set environment variables for django project
 
     $ cp pg_env_sample.txt pg_env.txt
     $ nano pg_env.txt			# Edit pg_env.txt and set environment variables for postgres and pgadmin
@@ -59,7 +63,16 @@ Use these commands respectively.
     # python3 manage.py migrate		# Database migrate
     # python3 manage.py createsuperuser	# Creating a superuser for login.
 
-Now you should be able to access your django server on http://localhost:8020 .
+Now you should be able to access your django server on http://localhost:8000.
+
+
+
+
+
+
+
+
+
 
 ## Postgresql
 In case if you want to use a local postgresql server instead on running a docker container.
