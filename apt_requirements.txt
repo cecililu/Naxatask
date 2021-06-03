@@ -13,3 +13,5 @@ nano
 curl
 git
 gdal-bin
+libgdal-dev
+g++ 
