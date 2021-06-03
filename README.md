@@ -19,12 +19,19 @@ Similarly create `entrypoint.sh` by copying the sample entrypoint script.
 ```sh
 $ cp docker-entrypoint.local.sh entrypoint.sh
 ```
-Also make a copy of `.env_sample` to `.env` and use it for setting environment variables for your project. 
+Also make a copy of `env_sample.txt` to `env.txt` and use it for setting environment variables for your project. 
 
-    $ cp .env_sample .env
-    $ nano .env				# Edit .env and set environment variables
+    $ cp env_sample.txt env.txt
+    $ nano env.txt			    # Edit env.txt and set environment variables for django project
 
- If you need postgresql database and other services running on docker container, start those first.
+    $ cp pg_env_sample.txt pg_env.txt
+    $ nano pg_env.txt			# Edit pg_env.txt and set environment variables for postgres and pgadmin
+
+    $ cp geoserver_env_sample.txt geoserver_env.txt
+    $ nano geoserver_env.txt	# Edit geoserver_env.txt and set environment variables for geoserver
+
+
+If you need postgresql database , pgadmin , geoserver and any other services running on docker container, start those first.
 ```sh
 $ docker-compose -f external_services.yml up -d
 ```
