@@ -7,9 +7,9 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-pg_env.txt/
-geoserver_env.txt/
-env_sample.txt/
+pg_env.txt
+geoserver_env.txt
+env_sample.txt
 
 
 #project
