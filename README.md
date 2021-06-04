@@ -12,7 +12,7 @@ Install [docker](https://docs.docker.com/engine/install/) and [docker-compose](h
 Create a local copy of `docker-compose.local.yml` on your machine. 
 
 ```sh
-$ 
+$ cp docker-compose.local.yml docker-compose.yml
 ```
 Similarly create `entrypoint.sh` by copying the sample entrypoint script.
 
