@@ -28,6 +28,7 @@ media/
 media
 frontend_app/
 dist/
+redis-data/
 
 
 # Byte-compiled / optimized / DLL files

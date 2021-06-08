@@ -11,7 +11,6 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-    container_name: pgadmin-naxa
     env_file: pg_env.txt
     ports:
       - "5051:80"
@@ -21,16 +20,34 @@ services:
 
   geoserver:
     image: kartoza/geoserver:2.19.0
-    container_name: geoserver-naxa
     env_file: geoserver_env.txt
     volumes:
       - geoserver-data:/opt/geoserver/data_dir
     ports:
       - "8600:8080"
-    restart : on-failure
+    restart: on-failure
     depends_on:
       - db
 
+  redis:
+    image: redis:alpine
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - ../redis_data:/var/lib/redis
+
+
+    celery:
+      env_file: .env
+      restart: always
+      entrypoint: celery -A project worker -l info
+      build:
+        context: .
+        dockerfile: Dockerfile
+      volumes:
+        - .:/code
+      depends_on:
+        - redis
 
 volumes:
   postgres-data:
