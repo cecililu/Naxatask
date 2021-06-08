@@ -5,6 +5,7 @@ from PIL import Image
 from django.core.files.base import ContentFile
 from io import BytesIO
 import os.path
+from core.utils.managers import ActiveManager
 
 
 # Create your models here.
@@ -28,6 +29,8 @@ class UserProfile(models.Model):
     thumbnail = models.ImageField(upload_to='upload/profile/', editable=False, null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     date_modified = models.DateTimeField(auto_now=True, blank=True, null=True)
+    objects = models.Manager()
+    active = ActiveManager()
 
     def make_thumbnail(self):
         try:
