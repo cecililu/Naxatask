@@ -61,3 +61,4 @@ uWSGI==2.0.18
 vine==5.0.0
 wcwidth==0.2.5
 zipp==3.4.1
+redis==3.5.3

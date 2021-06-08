@@ -11,6 +11,8 @@ pg_env.txt
 geoserver_env.txt
 env_sample.txt
 
+#Docker
+Dockerfile
 
 #project
 geoserver-data/
@@ -28,6 +30,7 @@ media/
 media
 frontend_app/
 dist/
+redis-data/
 
 
 # Byte-compiled / optimized / DLL files
