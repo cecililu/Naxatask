@@ -1,6 +1,6 @@
 # Django Template in Docker
 
- 
+
 ## Git
 
 Clone this repository
@@ -9,7 +9,7 @@ $ git clone https://github.com/naxa-developers/naxa-backend-template --depth=1
 ```
 ## Docker
 Install [docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/) in your system.
-Create a local copy of `docker-compose.local.yml` on your machine. 
+Create a local copy of `docker-compose.local.yml` on your machine.
 
 ```sh
 $ cp docker-compose.local.yml docker-compose.yml
@@ -24,7 +24,7 @@ $ cp docker-entrypoint.local.sh entrypoint.sh
     $ nano external_services.yml		    # Edit external_services.yml and set environment variables for django project
 
 
-Also make a copy of `env_sample` to `.env` and use it for setting environment variables for your project. 
+Also make a copy of `env_sample` to `.env` and use it for setting environment variables for your project.
     $ cp env_sample .env
     $ nano .env			    # Edit .env and set environment variables for django project
 
@@ -59,7 +59,7 @@ Use these commands respectively.
 
     $ docker exec -it -u 0 web bash		# Get a shell on container
 
-    # python3 manage.py collectstatic 	# Collecting static files 
+    # python3 manage.py collectstatic 	# Collecting static files
     # python3 manage.py migrate		# Database migrate
     # python3 manage.py createsuperuser	# Creating a superuser for login.
 
@@ -87,7 +87,7 @@ Edit `postgresql.conf` file to allow listening to other IP address.
 Now you will need to allow authentication to `postgresql` server by editing `pg_hba.conf`.
 
     $ sudo nano /etc/postgresql/10/main/pg_hba.conf
-    
+
 Find `host    all             all             127.0.0.1/32            md5`  and change it to `host    all    all    0.0.0.0/0    md5`
 
 Restart your postgresql server.
@@ -109,11 +109,11 @@ For creating a postgresql `role` , `database` & enabling `extensions`.
  For viewing status of your docker container.
 
     $docker-compose ps
-     Name               Command               State           Ports         
+     Name               Command               State           Ports
     ------------------------------------------------------------------------
-    nginx    /docker-entrypoint.sh ngin ...   Up      0.0.0.0:80->80/tcp    
+    nginx    /docker-entrypoint.sh ngin ...   Up      0.0.0.0:80->80/tcp
     web      sh entrypoint.sh                 Up      0.0.0.0:8001->8001/tcp
-    worker   celery -A project worker - ...   Up 
+    worker   celery -A project worker - ...   Up
 
 For viewing logs of your docker services.
 

@@ -14,4 +14,4 @@ curl
 git
 gdal-bin
 libgdal-dev
-g++ 
+g++
