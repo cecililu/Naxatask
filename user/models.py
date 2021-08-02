@@ -1,16 +1,20 @@
-from django.db import models
+import os.path
+from io import BytesIO
+
 from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
+from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from PIL import Image
-from django.core.files.base import ContentFile
-from io import BytesIO
-import os.path
 
+from core.utils.managers import ActiveManager
 
 # Create your models here.
 
+
 class UserProfile(models.Model):
-    GENDER_CHOICES = [("Male", _("Male")), ("Female", _("Female")), ("Other", _("Other"))]
+    GENDER_CHOICES = [("Male", _("Male")), ("Female",
+                                            _("Female")), ("Other", _("Other"))]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='Profile', null=True,
                              blank=True)
     first_name = models.CharField(max_length=64)
@@ -24,10 +28,15 @@ class UserProfile(models.Model):
     skype = models.CharField(max_length=64, blank=True, null=True)
     address = models.CharField(max_length=500, blank=True, null=True)
     is_deleted = models.BooleanField(default=False)
-    image = models.ImageField(upload_to='upload/profile/', null=True, blank=True)
-    thumbnail = models.ImageField(upload_to='upload/profile/', editable=False, null=True, blank=True)
-    date_created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    image = models.ImageField(
+        upload_to='upload/profile/', null=True, blank=True)
+    thumbnail = models.ImageField(
+        upload_to='upload/profile/', editable=False, null=True, blank=True)
+    date_created = models.DateTimeField(
+        auto_now_add=True, blank=True, null=True)
     date_modified = models.DateTimeField(auto_now=True, blank=True, null=True)
+    objects = models.Manager()
+    active = ActiveManager()
 
     def make_thumbnail(self):
         try:
@@ -49,7 +58,8 @@ class UserProfile(models.Model):
             image.save(temp_thumb, FTYPE)
             temp_thumb.seek(0)
             # set save=False, otherwise it will run in an infinite loop
-            self.thumbnail.save(thumb_filename, ContentFile(temp_thumb.read()), save=False)
+            self.thumbnail.save(thumb_filename, ContentFile(
+                temp_thumb.read()), save=False)
             temp_thumb.close()
             return True
         except:
