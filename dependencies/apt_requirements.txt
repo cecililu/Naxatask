@@ -12,4 +12,3 @@ libc-dev
 nano
 curl
 git
-

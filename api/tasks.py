@@ -1,5 +1,6 @@
-from celery.decorators import task
 from celery import shared_task
+from celery.decorators import task
+
 from user.models import UserProfile
 
 
