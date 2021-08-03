@@ -1,8 +1,12 @@
-# on:
-#   pull_request:
-#   push:
-#     branches: [master]
-on: push
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+      - staging
+  push:
+    branches:
+      - "*"
 name: Code Check
 jobs:
   build:
@@ -16,10 +20,5 @@ jobs:
         python-version: 3.6.9
     - name: Check Version
       run: python --version
-    # - name: Upload Artifacts
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: requirements.txt
-    #     path: requirements.txt
     - name: PreCommit
       uses: pre-commit/action@v2.0.3
