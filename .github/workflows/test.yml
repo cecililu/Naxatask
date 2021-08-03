@@ -1,0 +1,25 @@
+# on:
+#   pull_request:
+#   push:
+#     branches: [master]
+on: push
+name: Code Check
+jobs:
+  build:
+    name: Code Check
+    runs-on: naxa2
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python 3.6.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.6.9
+    - name: Check Version
+      run: python --version
+    # - name: Upload Artifacts
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: requirements.txt
+    #     path: requirements.txt
+    - name: PreCommit
+      uses: pre-commit/action@v2.0.3
