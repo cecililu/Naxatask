@@ -15,6 +15,7 @@ env_sample.txt
 Dockerfile
 
 #project
+postgres_data/
 geoserver-data/
 project/local_setting.py
 entrypoint.sh
