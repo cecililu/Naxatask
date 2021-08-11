@@ -4,6 +4,7 @@ ENV/
 
 # Postgresql
 postgres_data
+./postgres_data
 
 #redis
 _redis_data

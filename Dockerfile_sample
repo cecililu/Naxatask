@@ -1,6 +1,9 @@
-FROM python:3.6-slim
+FROM naxa/python:3.6-slim
+# Uses naxa/python:3.6-slim instead of python:3.6-slim so that
+# apt/requirement doesn't have to reinstall everytime
+
 ENV PYTHONUNBUFFERED 1
-RUN mkdir /code
+RUN mkdir -p /code
 WORKDIR /code
 
 COPY apt_requirements.txt /code/
@@ -14,5 +17,6 @@ ENV C_INCLUDE_PATH=/usr/include/gdal
 
 COPY requirements.txt /code/
 RUN pip install --no-cache-dir -r requirements.txt
+RUN rm /code/requirements.txt /code/apt_requirements.txt
 
 ENTRYPOINT /code/entrypoint.sh
