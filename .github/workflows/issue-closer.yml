@@ -2,11 +2,11 @@ name: Auto Issue Closer
 
 on:
   push:
-    branches: 
+    branches:
       - "develop" # i want issues to be closed only when pushed directly to these branches
       - "staging"
   pull_request:
-    branches: 
+    branches:
       - "develop" # i want issues to be closed when pr are merged to these branches
       - "staging"
 
