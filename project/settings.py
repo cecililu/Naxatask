@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     # local apps
     'user',
     'core',
-    'api'
 ]
 
 REST_FRAMEWORK = {

@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
-from api.serializers.user_serializer import *
-from user.models import *
+from .serializers import *
+from .models import *
 
 
 class UserProfileViewSet(viewsets.ModelViewSet):

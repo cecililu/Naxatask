@@ -1,0 +1,5 @@
+binutils
+libproj-dev
+gettext
+libc-dev
+python-dev
