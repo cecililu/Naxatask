@@ -29,26 +29,25 @@ class UserSerializer(serializers.ModelSerializer):
                         "password": {"write_only": True, "required": True},
                         "first_name": {"write_only": True, "required": True},
                         "last_name": {"write_only": True, "required": False},
-                        # "date_joined": {"write_only": True, "required": False},
+                        "date_joined": {"write_only": True, "required": False},
                         }
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    liked_innovations = serializers.SerializerMethodField()
-    my_innovations = serializers.SerializerMethodField()
+    is_active = serializers.SerializerMethodField()
+    username = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
         fields = '__all__'
 
-    def get_liked_innovations(self, obj):
-        request = self.context.get('request')
-        return [x.id for x in request.user.innovation_likes.all()]
+    def get_is_active(self, obj):
+        status = obj.user.is_active
+        return status
 
-    def get_my_innovations(self, obj):
-        request = self.context.get('request')
-        return [x.id for x in request.user.innovation_owner.all()]
-
+    def get_username(self, obj):
+        username = obj.user.username
+        return username
 
 class SocialLoginSerializer(serializers.Serializer):
     access_token = serializers.CharField(required=False, allow_blank=True)

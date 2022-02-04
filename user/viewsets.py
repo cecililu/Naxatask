@@ -16,7 +16,8 @@ from django.utils.decorators import method_decorator
 
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
-from rest_framework import viewsets, status
+from rest_framework import status
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework.mixins import CreateModelMixin
 from rest_framework.views import APIView, Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -68,7 +69,7 @@ def get_token_model():
 TokenModel = get_token_model()
 
 
-class UserRegisterViewSet(viewsets.GenericViewSet, CreateModelMixin):
+class UserRegisterViewSet(GenericViewSet, CreateModelMixin):
     def create(self, request):
         try:
             if UserProfile.objects.filter(user__email=request.data.get("email")).exists():
@@ -93,12 +94,11 @@ class UserRegisterViewSet(viewsets.GenericViewSet, CreateModelMixin):
 
 class UserSignIn(APIView):
     def post(self, request, *args, **kwargs):
-        username_or_email = request.data.get("username_or_email")
+        username = request.data.get("username")
         password = request.data.get("password")
-        if UserProfile.objects.filter(Q(user_name=username_or_email) | Q(email=username_or_email)).exists():
-            profile = UserProfile.objects.filter(
-                Q(user_name=username_or_email) | Q(email=username_or_email))
-            user = profile[0].user
+        if User.objects.filter(Q(username=username) | Q(email=username)).exists():
+            user = User.objects.filter(
+                Q(username=username) | Q(email=username))[0]
             if user.check_password(password):
                 if user.is_active:
                     token, created = Token.objects.get_or_create(user=user)
@@ -107,12 +107,12 @@ class UserSignIn(APIView):
                         'user_id': user.pk,
                         'email': user.email,
                         'username': user.username})
-                return Response({"message": "Unverified account .Please check your mail and verify your account."}, status=400)
-        return Response({"message": "Invalid username  or password. Please enter a valid username or email or password"}, status=400)
+                return Response({"message": "Unverified account .Please check your email and verify your account."}, status=400)
+            return Response({"message": "Invalid password"}, status=403)
+        return Response({"message": "User does not exist."}, status=400)
 
 
 def activate_user(request, uidb64, token):
-
     User = get_user_model()
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
@@ -138,54 +138,18 @@ def activate_user(request, uidb64, token):
         return HttpResponse('Activation link is invalid!')
 
 
-class UserProfileViewSet(viewsets.ViewSet):
+class UserProfileViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = UserProfile.objects.order_by('-id')
+    serializer_class = UserProfileSerializer
+    http_method_names = ['get', 'post', 'patch']
 
-    def list(self, request):
-        queryset = UserProfile.objects.filter(user=request.user)
-        serializer = UserProfileSerializer(
-            queryset, many=True, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def partial_update(self, request, pk=None):
-        profile = UserProfile.objects.get(pk=pk)
-        area_of_interest = request.data.get('area_of_interest')
-        bio = request.data.get('bio')
-        if bio:
-            bio_words_count = len(bio.split())
-
-        if area_of_interest:
-            interests = json.loads(area_of_interest)
-            profile.area_of_interest.set(interests)
-            request.data._mutable = True
-            request.data.pop('area_of_interest', None)
-
-        serializer = UserProfileSerializer(
-            profile, data=request.data, partial=True)
-
-        if serializer.is_valid():
-            if bio and bio_words_count > 100:
-                return Response(status=403, data={'bio': [
-                    "Ensure this field has no more than 100 words."
-                ]})
-            serializer.save()
-
-            serializer = UserProfileSerializer(
-                profile, context={'request': request})
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_403_FORBIDDEN)
-
-    def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        if self.action == 'partial_update':
-            permission_classes = [IsAuthenticated]
-        else:
-            permission_classes = [AllowAny]
-        return [permission() for permission in permission_classes]
-
-    def __str__(self):
-        return "UserProfileViewSet"
+    def get_queryset(self):
+        queryset = UserProfile.objects.order_by('-id')
+        id = self.request.query_params.get('id', None)
+        if id:
+            queryset = UserProfile.objects.filter(user=self.request.user)
+        return queryset
 
 
 class RestPasswordConfirmEmail(APIView):
