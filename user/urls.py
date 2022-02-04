@@ -15,7 +15,7 @@ router.register(r"user-profile", UserProfileViewSet, basename="user-profile")
 urlpatterns = [
     path("", include(router.urls)),
     path("sign-in/", UserSignIn.as_view()),
-    path('email_verification/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+    path('email_verification/<str:uidb64>/<str:token>/',
          activate_user, name='email_activate'),
     path('facebook-sign-in/', CustomFacebookLoginView.as_view(), name='fb_sign_in'),
     path('google-sign-in/', CustomGoogleLoginView.as_view(), name='google_sign_in'),
