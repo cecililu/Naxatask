@@ -1,18 +1,21 @@
+from django.core.mail import send_mail
+from django.utils.encoding import force_bytes
+from django.utils.html import strip_tags
+from django.template.loader import render_to_string
+from rest_framework.decorators import api_view, permission_classes
 from django.http import HttpResponse
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_text
-from django.contrib.auth import get_user_model
-import uuid
-import json
-
+from django.contrib.auth import get_user_model, authenticate
+from django.utils.http import urlsafe_base64_encode
 from django.utils.module_loading import import_string
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib.auth.models import User
-from django.core.mail import send_mail
 from django.conf import settings
 from django.db.models import Q
 from django.views.decorators.debug import sensitive_post_parameters
 from django.utils.decorators import method_decorator
+from django.shortcuts import render
 
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
@@ -32,7 +35,8 @@ from dj_rest_auth.app_settings import (
 
 from .models import UserProfile
 from .utils import account_activation_token
-from .serializers import UserSerializer, UserProfileSerializer, SocialLoginSerializer
+from .serializers import UserSerializer, UserProfileSerializer, SocialLoginSerializer, \
+    ChangePasswordSerializer
 
 serializers = getattr(settings, 'REST_AUTH_SERIALIZERS', {})
 
@@ -152,52 +156,88 @@ class UserProfileViewSet(ModelViewSet):
         return queryset
 
 
-class RestPasswordConfirmEmail(APIView):
-    def post(self, request, *args, **kwargs):
-        try:
-            email = request.data.get("email")
-            if UserProfile.objects.filter(Q(email=email)).exists():
-                profile = UserProfile.objects.filter(
-                    Q(email=email))
-                if profile[0].user.email == email:
-                    uuid_code1 = uuid.uuid4()
-                    uuid_code2 = uuid.uuid4()
-                    uuid_code = str(uuid_code1)+str(uuid_code2)
-                    profile = UserProfile.objects.get(user=profile[0].user)
-                    profile.forget_password_token = uuid_code
-                    profile.save()
-                    subject = "Email Verification for password reset"
-                    message = f'Click in the link to reset your password {settings.URL}/forgot-password/?token={uuid_code}'
-                    email_from = settings.EMAIL_HOST_USER
-                    email_to = [email]
-                    send_mail(subject, message, email_from, email_to)
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+def change_password(request):
+    old_password = request.data.get('old_password', None)
+    new_password = request.data.get('new_password', None)
+    confirm_password = request.data.get('confirm_password', None)
+    user = authenticate(
+        username=request.user.username, password=old_password)
 
-                    return Response({"message": "A confirmation email confirmation link is send to you email please check it"}, status=status.HTTP_200_OK)
-            return Response({"message": "Incorrect email or Email not found"}, status=400)
-        except Exception as error:
-            return Response({"message": str(error)}, status=400)
+    if user is not None:
+        if new_password == confirm_password:
+            user.set_password(new_password)
+            user.save()
+            return Response(status=status.HTTP_201_CREATED, data={'Message': 'Password Successfuly Updated.'})
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'Error': 'New and Confirm passwords do not match.'})
+
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST, data={'Error': 'Incorrect old password'})
 
 
-class ResetPassword(APIView):
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+def forgot_password(request):
+    email = request.data.get('email', None)
+    if User.objects.filter(email=email).exists():
+        user = User.objects.get(email=email)
+        username = user.username if user.username else email.split(
+            '@')[0]
 
-    def post(self, request, *args, **kwargs):
-        try:
-            forgot_password_token = request.data.get("forgot_password_token")
-            password1 = request.data.get("new_password1")
-            password2 = request.data.get("new_password2")
-            if password1 == password2:
-                if UserProfile.objects.filter(forget_password_token=forgot_password_token).exists():
-                    profile = UserProfile.objects.filter(
-                        forget_password_token=forgot_password_token)
-                    user = profile[0].user
-                    user.set_password(password1)
-                    user.save()
-                    return Response({"message": "Password reset successfully. Please Login"}, status=status.HTTP_200_OK)
-                return Response({"message": "Incorrect token "}, status=400)
-            return Response({"message": "Password didnot match"}, status=400)
-        except Exception as error:
-            return Response({"message": str(error)}, status=400)
+        # password reset link email
+        current_site = settings.BACKEND_URL
+        email_subject = 'Reset Password for Naxa App'
+        template = 'forgot_password_email_template.html'
 
+        email_data = {
+            'user': username.title(),
+            'domain': current_site,
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            'token': account_activation_token.make_token(user),
+
+        }
+
+        mail_to = str(request.data['email'])
+        html_message = render_to_string(
+            template, email_data)
+        email_message = strip_tags(html_message)
+
+        email_res = send_mail(email_subject,
+                                email_message, settings.EMAIL_HOST_USER, [email, ], html_message=html_message, fail_silently=False)
+        email_response = "We have sent an link to reset your password. Please check your email" if email_res else "Could not send and email. Please try again later"
+        return Response({'Message': email_response}, status=status.HTTP_200_OK)
+    else:
+        return Response({'Message': 'User does not exists with this email.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+def reset_passoword(request, uidb64, token):
+    User = get_user_model()
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        if request.method == "POST":
+            new_password = request.POST.get('new_password')
+            confirm_password = request.POST.get('confirm_password')
+
+            if new_password == confirm_password:
+                user.set_password(new_password)
+                user.save()
+                return render(
+                    request, 'forgot_password_confirm_password.html', {'action': 'success', 'uidb64': uidb64, 'token': token})
+            else:
+                return render(
+                    request, 'forgot_password_confirm_password.html', {'action': 'mismatch', 'uidb64': uidb64, 'token': token})
+        else:
+            return render(
+                request, 'forgot_password_confirm_password.html', {'action': 'confirming', 'uidb64': uidb64, 'token': token})
+    else:
+        return render(
+            request, 'forgot_password_confirm_password.html', {'action': 'invalid_link', 'uidb64': uidb64, 'token': token})
 
 
 class LoginView(GenericAPIView):

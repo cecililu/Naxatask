@@ -190,3 +190,9 @@ class SocialLoginSerializer(serializers.Serializer):
 
         attrs['user'] = login.account.user
         return attrs
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(max_length=20, min_length=4)
+    new_password = serializers.CharField(max_length=20, min_length=4)
+    confirm_password = serializers.CharField(max_length=20, min_length=4)
