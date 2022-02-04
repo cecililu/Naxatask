@@ -1,21 +1,38 @@
 from django.contrib.auth.models import User
-from django.db.models.signals import post_delete, post_save, pre_delete
+from django.db.models.signals import post_save
 from django.dispatch import receiver
+from  django.conf import settings
+from django.utils.http import urlsafe_base64_encode
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.utils.encoding import force_bytes
+from django.core.mail import send_mail
 
-from user.models import UserProfile
+from .utils import account_activation_token
 
 
 @receiver(post_save, sender=User)
-def save_user_profile(sender, instance, created, raw, **kwargs):
+def send_activation_email(sender, instance, created, raw, **kwargs):
     if created:
-        profile = UserProfile.objects.create(
-            user=instance, email=instance.email, middle_name='')
-    else:
-        profile = UserProfile.objects.get(user=instance)
-    first_name, last_name, email, middle_name = instance.first_name, instance.last_name, instance.email, ''
-    if first_name and last_name:
-        profile.first_name = first_name
-        profile.last_name = last_name
-        profile.middle_name = middle_name
-        profile.email = email
-        profile.save()
+        current_site = settings.BACKEND_URL
+        email_subject = 'User Activation Email'
+        template = 'new_user_email_template.html'
+
+        email_data = {
+            'user_title': instance.username.title(),
+            'user': instance,
+            'domain': current_site,
+            'uid': urlsafe_base64_encode(force_bytes(instance.pk)),
+            'token': account_activation_token.make_token(instance),
+        }
+        mail_to = str(instance.email)
+        html_message = render_to_string(
+            template, email_data)
+        email_message = strip_tags(html_message)
+
+        email_res = send_mail(email_subject,
+                              email_message, settings.EMAIL_HOST_USER, [instance.email, ], html_message=html_message, fail_silently=False)
+        email_response = ", Confirm your email address.".format(
+            mail_to) if email_res else "Email verification could not be done."
+
+

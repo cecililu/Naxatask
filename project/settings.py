@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
@@ -46,6 +47,14 @@ INSTALLED_APPS = [
     # local apps
     'user',
     'core',
+
+    # social login
+    'allauth',
+    'allauth.account',
+    'dj_rest_auth',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google'
 ]
 
 REST_FRAMEWORK = {
@@ -153,6 +162,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 MEDIA_URL = '/media/'
+
+SITE_ID = 1
+BACKEND_URL = os.environ.get("BACKEND_URL", "http://127.0.0.1:8000/")
+
 
 try:
     from project.local_settings import *

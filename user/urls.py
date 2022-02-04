@@ -1,11 +1,27 @@
-from django.urls import include, path
-from rest_framework.routers import DefaultRouter
+from django.urls import path, include
+from django.conf.urls import url
+from rest_framework import routers
+from user.viewsets import UserRegisterViewSet, UserProfileViewSet, UserSignIn, \
+    RestPasswordConfirmEmail, ResetPassword, CustomGoogleLoginView, CustomFacebookLoginView, \
+    activate_user
+from django.conf.urls.static import static
+from django.conf import settings
 
-from .viewsets import *
 
-router = DefaultRouter()
-router.register(r'user-profile', UserProfileViewSet)
+router = routers.DefaultRouter()
+router.register(r"sign-up", UserRegisterViewSet, basename="users")
+router.register(r"user-profile", UserProfileViewSet, basename="user-profile")
 
 urlpatterns = [
-    path('', include(router.urls)),
-]
+    path("", include(router.urls)),
+    path("sign-in/", UserSignIn.as_view()),
+    path('email_verification/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+         activate_user, name='email_activate'),
+    path('facebook-sign-in/', CustomFacebookLoginView.as_view(), name='fb_sign_in'),
+    path('google-sign-in/', CustomGoogleLoginView.as_view(), name='google_sign_in'),
+    path('forgot-password-email-check/', RestPasswordConfirmEmail.as_view(),
+         name='password_reset_email_check'),
+    path('password-reset/', ResetPassword.as_view(),
+         name='password_reset'),
+    path('accounts/', include('allauth.urls'), name='socialaccount_signup'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
