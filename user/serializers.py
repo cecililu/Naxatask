@@ -49,6 +49,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         username = obj.user.username
         return username
 
+
+# serializers for social login (facebook and google), remove all code below this if you don't need social login
 class SocialLoginSerializer(serializers.Serializer):
     access_token = serializers.CharField(required=False, allow_blank=True)
     code = serializers.CharField(required=False, allow_blank=True)
@@ -190,9 +192,3 @@ class SocialLoginSerializer(serializers.Serializer):
 
         attrs['user'] = login.account.user
         return attrs
-
-
-class ChangePasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(max_length=20, min_length=4)
-    new_password = serializers.CharField(max_length=20, min_length=4)
-    confirm_password = serializers.CharField(max_length=20, min_length=4)

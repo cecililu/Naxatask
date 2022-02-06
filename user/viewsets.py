@@ -35,8 +35,7 @@ from dj_rest_auth.app_settings import (
 
 from .models import UserProfile
 from .utils import account_activation_token
-from .serializers import UserSerializer, UserProfileSerializer, SocialLoginSerializer, \
-    ChangePasswordSerializer
+from .serializers import UserSerializer, UserProfileSerializer, SocialLoginSerializer
 
 serializers = getattr(settings, 'REST_AUTH_SERIALIZERS', {})
 
@@ -180,6 +179,11 @@ def change_password(request):
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
 def forgot_password(request):
+    '''
+    This function allows user to request passowrsd reset
+    and sends password reset email with uid and token
+    for validating in next funtiom.
+    '''
     email = request.data.get('email', None)
     if User.objects.filter(email=email).exists():
         user = User.objects.get(email=email)
@@ -213,6 +217,10 @@ def forgot_password(request):
 
 
 def reset_passoword(request, uidb64, token):
+    '''
+    This function checks if passoword change request is
+    valid. And resets password if it is valid.
+    '''
     User = get_user_model()
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
@@ -240,6 +248,8 @@ def reset_passoword(request, uidb64, token):
             request, 'forgot_password_confirm_password.html', {'action': 'invalid_link', 'uidb64': uidb64, 'token': token})
 
 
+
+# views for social login (facebook and google), remove all code below this if you don't need social login
 class LoginView(GenericAPIView):
     """
     Check the credentials and return the REST Token
@@ -352,5 +362,4 @@ class CustomFacebookLoginView(SocialLoginView):
 
 class CustomGoogleLoginView(SocialLoginView):
 
-    # authentication_classes = [TokenAuthentication, ]
     adapter_class = GoogleOAuth2Adapter

@@ -163,7 +163,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 MEDIA_URL = '/media/'
 
-SITE_ID = 1
+SITE_ID = os.environ.get("SITE_ID", 1)
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://127.0.0.1:8000/")
 
 
