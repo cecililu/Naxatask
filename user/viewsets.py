@@ -1,41 +1,39 @@
-from django.core.mail import send_mail
-from django.utils.encoding import force_bytes
-from django.utils.html import strip_tags
-from django.template.loader import render_to_string
-from rest_framework.decorators import api_view, permission_classes
-from django.http import HttpResponse
-from django.utils.http import urlsafe_base64_decode
-from django.utils.encoding import force_text
-from django.contrib.auth import get_user_model, authenticate
-from django.utils.http import urlsafe_base64_encode
-from django.utils.module_loading import import_string
-from django.core.exceptions import ImproperlyConfigured
-from django.contrib.auth.models import User
-from django.conf import settings
-from django.db.models import Q
-from django.views.decorators.debug import sensitive_post_parameters
-from django.utils.decorators import method_decorator
-from django.shortcuts import render
-
-from rest_framework.views import APIView
-from rest_framework.generics import GenericAPIView
-from rest_framework import status
-from rest_framework.viewsets import GenericViewSet, ModelViewSet
-from rest_framework.mixins import CreateModelMixin
-from rest_framework.views import APIView, Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.authtoken.models import Token
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
-from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.account.adapter import get_adapter
-from dj_rest_auth.app_settings import (
-    JWTSerializer, JWTSerializerWithExpiration, LoginSerializer,TokenSerializer,
-    create_token,
-)
+from allauth.socialaccount.providers.facebook.views import \
+    FacebookOAuth2Adapter
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from dj_rest_auth.app_settings import (JWTSerializer,
+                                       JWTSerializerWithExpiration,
+                                       LoginSerializer, TokenSerializer,
+                                       create_token)
+from django.conf import settings
+from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth.models import User
+from django.core.exceptions import ImproperlyConfigured
+from django.core.mail import send_mail
+from django.db.models import Q
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.template.loader import render_to_string
+from django.utils.decorators import method_decorator
+from django.utils.encoding import force_bytes, force_text
+from django.utils.html import strip_tags
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.module_loading import import_string
+from django.views.decorators.debug import sensitive_post_parameters
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import CreateModelMixin
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.views import APIView, Response
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from .models import UserProfile
+from .serializers import (SocialLoginSerializer, UserProfileSerializer,
+                          UserSerializer)
 from .utils import account_activation_token
-from .serializers import UserSerializer, UserProfileSerializer, SocialLoginSerializer
 
 serializers = getattr(settings, 'REST_AUTH_SERIALIZERS', {})
 
@@ -209,7 +207,7 @@ def forgot_password(request):
         email_message = strip_tags(html_message)
 
         email_res = send_mail(email_subject,
-                                email_message, settings.EMAIL_HOST_USER, [email, ], html_message=html_message, fail_silently=False)
+                              email_message, settings.EMAIL_HOST_USER, [email, ], html_message=html_message, fail_silently=False)
         email_response = "We have sent an link to reset your password. Please check your email" if email_res else "Could not send and email. Please try again later"
         return Response({'Message': email_response}, status=status.HTTP_200_OK)
     else:
@@ -246,7 +244,6 @@ def reset_passoword(request, uidb64, token):
     else:
         return render(
             request, 'forgot_password_confirm_password.html', {'action': 'invalid_link', 'uidb64': uidb64, 'token': token})
-
 
 
 # views for social login (facebook and google), remove all code below this if you don't need social login
@@ -302,9 +299,8 @@ class LoginView(GenericAPIView):
         serializer_class = self.get_response_serializer()
 
         if getattr(settings, 'REST_USE_JWT', False):
-            from rest_framework_simplejwt.settings import (
-                api_settings as jwt_settings,
-            )
+            from rest_framework_simplejwt.settings import \
+                api_settings as jwt_settings
             access_token_expiration = (
                 timezone.now() + jwt_settings.ACCESS_TOKEN_LIFETIME)
             refresh_token_expiration = (

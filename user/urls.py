@@ -1,12 +1,13 @@
-from django.urls import path, include
-from django.conf.urls import url
-from rest_framework import routers
-from user.viewsets import UserRegisterViewSet, UserProfileViewSet, UserSignIn, \
-    change_password, forgot_password, CustomGoogleLoginView, CustomFacebookLoginView, \
-    activate_user, reset_passoword
-from django.conf.urls.static import static
 from django.conf import settings
+from django.conf.urls import url
+from django.conf.urls.static import static
+from django.urls import include, path
+from rest_framework import routers
 
+from user.viewsets import (CustomFacebookLoginView, CustomGoogleLoginView,
+                           UserProfileViewSet, UserRegisterViewSet, UserSignIn,
+                           activate_user, change_password, forgot_password,
+                           reset_passoword)
 
 router = routers.DefaultRouter()
 router.register(r"sign-up", UserRegisterViewSet, basename="users")

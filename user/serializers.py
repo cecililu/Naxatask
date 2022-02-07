@@ -1,10 +1,12 @@
-from rest_framework import serializers
-from django.contrib.auth.models import User
-from user.models import UserProfile
-from django.http import HttpRequest
-from requests.exceptions import HTTPError
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
+from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
+from requests.exceptions import HTTPError
+from rest_framework import serializers
+
+from user.models import UserProfile
+
 try:
     from allauth.account import app_settings as allauth_settings
     from allauth.account.adapter import get_adapter
