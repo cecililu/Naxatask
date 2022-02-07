@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     # local apps
     'user',
     'core',
+    'api',
 
     # social login
     'allauth',
