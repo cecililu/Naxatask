@@ -7,15 +7,15 @@
 
 You can build the repository according to your needs.
 
-If yours is a gis project, that needs geoserver, gdal etc.
+If yours is a gis project, that needs playing with large gis data or uses libraries like geoserver, gcc.
 
 ```sh
 $ cp apt_requirements_gis.txt apt_requirements.txt
 $ cp requirements_gis.txt requirements.txt
 ```
 
-If yours is a non-gis project. i.e. Does not require geoserver, gdal etc.
-Even if you need simple gis db fields like PointField from django.contrib.gis.db, you can build this version.
+If yours is a non-gis project. i.e. Does not have whole lot of gis data, or does not use libraries like geoserver, gcc etc.
+Even if you need simple gis db fields like PointField from django.contrib.gis.db, you can build this version. This version also includes GDAL.
 
 ```sh
 $ cp apt_requirements_nongis.txt apt_requirements.txt
