@@ -1,12 +1,36 @@
 # Django Template in Docker
+## Notes before starting
+
+### Place core features of the application in core app and build APIs in the same app's viewsets and serializers files.
+### If the application is large divide it into smaller apps (Add according to you need.)
 
 
+You can build the repository according to your needs.
+
+If yours is a gis project, that needs playing with large gis data or uses libraries like geoserver, gcc.
+
+```sh
+$ cp apt_requirements_gis.txt apt_requirements.txt
+$ cp requirements_gis.txt requirements.txt
+```
+
+If yours is a non-gis project. i.e. Does not have whole lot of gis data, or does not use libraries like geoserver, gcc etc.
+Even if you need simple gis db fields like PointField from django.contrib.gis.db, you can build this version. This version also includes GDAL.
+
+```sh
+$ cp apt_requirements_nongis.txt apt_requirements.txt
+$ cp requirements_nongis.txt requirements.txt
+```
+
+
+# Setup Process
 ## Git
 
 Clone this repository
 ```sh
 $ git clone https://github.com/naxa-developers/naxa-backend-template --depth=1
 ```
+
 ## Docker
 Install [docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/) in your system.
 Create a local copy of `docker-compose.local.yml` on your machine.

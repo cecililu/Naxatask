@@ -157,3 +157,6 @@ dmypy.json
 
 .idea
 .idea/
+requirements.txt
+apt_requirements.txt
+apt_requirements.txt
