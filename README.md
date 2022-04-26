@@ -45,15 +45,18 @@ $ cp docker-entrypoint.local.sh entrypoint.sh
 ```
 
     $ cp external_services_sample.yml  external_services.yml
-    $ nano external_services.yml		    # Edit external_services.yml and set environment variables for django project
-
+    $ nano external_services.yml	 # Edit external_services.yml to keep just the services you need
 
 Also make a copy of `env_sample` to `.env` and use it for setting environment variables for your project.
+
     $ cp env_sample .env
     $ nano .env			    # Edit .env and set environment variables for django project
+Similarly for postgres and pgadmin containers if you are using those services from external services
 
     $ cp pg_env_sample.txt pg_env.txt
     $ nano pg_env.txt			# Edit pg_env.txt and set environment variables for postgres and pgadmin
+
+If you are using geoserver, create env for the same
 
     $ cp geoserver_env_sample.txt geoserver_env.txt
     $ nano geoserver_env.txt	# Edit geoserver_env.txt and set environment variables for geoserver
@@ -63,12 +66,15 @@ If you need postgresql database , pgadmin , geoserver and any other services run
 ```sh
 $ docker-compose -f external_services.yml up -d
 ```
-To run the project in docker
+Then start the containers from main compose file
 
     $ docker-compose up -d			#  Will create all necessary services
     Starting db ... done
     Starting web   ... done
     Starting worker  ... done
+
+Go to the postgres database container if you are using one and create database according to credential provided in env file.
+You project should be running now
 
 To stop all running containers
 

@@ -37,17 +37,17 @@ services:
       - ../redis_data:/var/lib/redis
 
 
-    celery:
-      env_file: .env
-      restart: always
-      entrypoint: celery -A project worker -l info
-      build:
-        context: .
-        dockerfile: Dockerfile
-      volumes:
-        - .:/code
-      depends_on:
-        - redis
+  celery:
+    env_file: .env
+    restart: always
+    entrypoint: celery -A project worker -l info
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
 
 volumes:
   postgres-data:
