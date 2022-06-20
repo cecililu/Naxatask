@@ -71,13 +71,15 @@ TokenModel = get_token_model()
 
 
 class UserRegisterViewSet(GenericViewSet, CreateModelMixin):
+    serializer_class = UserSerializer
+
     def create(self, request):
         try:
             if UserProfile.objects.filter(user__email=request.data.get("email")).exists():
                 return Response({"message": "Email is already registered"}, status=400)
             if UserProfile.objects.filter(user__username=request.data.get("username")).exists():
                 return Response({"message": "Username is already registered"}, status=400)
-            serializer = UserSerializer(data=request.data)
+            serializer = self.serializer_class(data=request.data)
             if serializer.is_valid():
                 user = serializer.save(is_active=False)
                 user.set_password(serializer.validated_data["password"])
