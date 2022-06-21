@@ -4,7 +4,7 @@ from io import BytesIO
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from PIL import Image
 
 from core.utils.managers import ActiveManager
