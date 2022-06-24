@@ -16,7 +16,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_bytes, force_text
+from django.utils.encoding import force_bytes, force_str
 from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.module_loading import import_string
@@ -71,13 +71,15 @@ TokenModel = get_token_model()
 
 
 class UserRegisterViewSet(GenericViewSet, CreateModelMixin):
+    serializer_class = UserSerializer
+
     def create(self, request):
         try:
             if UserProfile.objects.filter(user__email=request.data.get("email")).exists():
                 return Response({"message": "Email is already registered"}, status=400)
             if UserProfile.objects.filter(user__username=request.data.get("username")).exists():
                 return Response({"message": "Username is already registered"}, status=400)
-            serializer = UserSerializer(data=request.data)
+            serializer = self.serializer_class(data=request.data)
             if serializer.is_valid():
                 user = serializer.save(is_active=False)
                 user.set_password(serializer.validated_data["password"])
@@ -116,7 +118,7 @@ class UserSignIn(APIView):
 def activate_user(request, uidb64, token):
     User = get_user_model()
     try:
-        uid = force_text(urlsafe_base64_decode(uidb64))
+        uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
@@ -221,7 +223,7 @@ def reset_passoword(request, uidb64, token):
     '''
     User = get_user_model()
     try:
-        uid = force_text(urlsafe_base64_decode(uidb64))
+        uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None

@@ -1,4 +1,4 @@
-libpangocairo-1.0
+libpangocairo-1.0-0
 libpq-dev
 python-dev
 libproj-dev

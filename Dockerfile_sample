@@ -1,4 +1,4 @@
-FROM naxa/python:3.6-slim
+FROM python:3.9-slim
 # Uses naxa/python:3.6-slim instead of python:3.6-slim so that
 # apt/requirement doesn't have to reinstall everytime
 
