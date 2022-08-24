@@ -12,13 +12,52 @@ services:
       - ./sock/:/sock/
       - ./:/code
       - ./logs/:/logs/
-    command: sh entrypoint.sh
+    entrypoint: sh entrypoint.sh
     env_file:
-      - .env
+      - env.txt
     depends_on:
       - db
     networks:
       - django_nw
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: "300M"
+
+  db:
+    image: mdillon/postgis:11-alpine
+    restart: always
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data/
+    # ports:
+    #   - 5432:5432
+    env_file:
+      - pg_env.txt
+    networks:
+      - django_nw
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: "200M"
+
+  redis:
+    image: redis:alpine
+    restart: always
+    entrypoint: redis-server --appendonly yes
+    # ports:
+    #   - 6379:6379
+    volumes:
+      - ./_redis_data:/var/lib/redis
+      - ./redis/rc.local:/etc/rc.local
+    networks:
+      - django_nw
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: "200M"
 
   worker:
     build:
@@ -26,15 +65,21 @@ services:
       dockerfile: Dockerfile
     restart: always
     container_name: worker
-    command: "celery -A project worker -f /logs/worker.log -l DEBUG"
+    entrypoint: "celery -A project worker -f /logs/worker.log -l DEBUG"
     depends_on:
       - web
+      - redis
     volumes:
       - ./logs/:/logs/
     env_file:
       - env.txt
     networks:
       - django_nw
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: "250M"
 
   nginx:
     image: nginx:latest
@@ -53,30 +98,11 @@ services:
       - worker
     networks:
       - django_nw
-
-  db:
-    image: mdillon/postgis:11-alpine
-    restart: always
-    volumes:
-      - ./postgres_data:/var/lib/postgresql/data/
-    # ports:
-    #   - 5432:5432
-    env_file:
-      - pg_env.txt
-    networks:
-      - django_nw
-
-  redis:
-    image: redis:alpine
-    restart: always
-    command: redis-server --appendonly yes
-    # ports:
-    #   - 6379:6379
-    volumes:
-      - ./_redis_data:/var/lib/redis
-      - ./redis/rc.local:/etc/rc.local
-    networks:
-      - django_nw
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: "200M"
 
 networks:
   django_nw:
