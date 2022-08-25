@@ -1,15 +1,19 @@
-#Change env_sample to .env (or as mentioned in docker-compose.yml)
+#Change env_sample to .env or env_sample (or as mentioned in docker-compose.yml)
 
-# Docker
-COMPOSE_PROJECT_NAME=django_template
 DEBUG=1
 SECRET_KEY=xyggedefsdfsdf&g3v(i0+s^*3y
+
+CSRF_TRUSTED_ORIGINS=https://*.naxa.com.np
+SITE_ID=1
+
 SQL_ENGINE=django.contrib.gis.db.backends.postgis
+
 POSTGRES_DB=<name-of-your-database>
 POSTGRES_USER=<postgresql-role-user>
 POSTGRES_PASSWORD=<postgresql-role-password>
 POSTGRES_HOST=<ip-address-or-hostname-of-your-database>
 POSTGRES_PORT=5432
+
 
 # EMAIL_HOST_USER=backend.project@gmail.com
 # EMAIL_HOST_PASSWORD=project@123
