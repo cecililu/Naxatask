@@ -157,10 +157,7 @@ dmypy.json
 
 .idea
 .idea/
-<<<<<<< HEAD
 
-=======
 requirements.txt
 apt_requirements.txt
 apt_requirements.txt
->>>>>>> 63ed237a020d65bcfd600e54eb63a6416bdecaf0
