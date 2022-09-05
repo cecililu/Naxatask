@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY", "xyggedefsdfsdf&g3v(i0+s^*3y")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", True)
+DEBUG = bool(os.environ.get("DEBUG", True))
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", ["*"])
 
@@ -162,12 +162,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 MEDIA_URL = "/media/"
 
-SITE_ID = os.environ.get("SITE_ID", 1)
+SITE_ID = int(os.environ.get("SITE_ID", 1))
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://127.0.0.1:8000/")
 
 CSRF_TRUSTED_ORIGINS = [os.environ.get(
     "CSRF_TRUSTED_ORIGINS", 'https://*.naxa.com.np,').strip(',')]
 
+DEFAULT_AUTO_FIELD = os.environ.get("DEFAULT_AUTO_FIELD", 'django.db.models.AutoField')
 
 try:
     from project.local_settings import *
