@@ -4,6 +4,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import TemplateView
+from .views import HomeView
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 
@@ -15,7 +16,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name="about.html")),
+    path('', HomeView.as_view()),
     path('admin/', admin.site.urls),
     path('api/v1/user/', include('user.urls')),
 ]

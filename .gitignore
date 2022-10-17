@@ -155,6 +155,10 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+#vscode
+.vscode
+.vscode/
+
 .idea
 .idea/
 
