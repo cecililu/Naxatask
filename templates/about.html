@@ -9,80 +9,92 @@
 <body>
     <div class="container">
 
-<h1 align="center">Django Boiler Plate </h1>
-<h1 align="center">Congratulation Setup Successfully Completed!!!! </h1>
-<p align="center">Base project structure with some included package and function. To be used for all projects In Naxa
-   for Backend</p>
-<h3 class="text-bold">Package Included </h3>
-<div>
-    <table class="table table-striped">
-        <thead>
-            <th>
-                Package Name
-            </th>
-            <th>
-                Package Key
-            </th>
-            <th>
-                Package Version
-            </th>
-        </thead>
-        <tbody>
-            {% for package in packages %}
-            <tr>
-                <td>
-                    <b>{{ package.project_name }}</b>
-                </td>
-                <td>
-                    {{ package.key }}
-                </td>
-                <td>
-                    {{ package.version }}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <h1 align="center">Django Boiler Plate </h1>
+        <h1 align="center">Congratulation Setup Successfully Completed!!!! </h1>
+        <p align="center">Base project structure with some included package and function. To be used for all projects In Naxa
+        for Backend</p>
+        <h3 class="text-bold">Package Included </h3>
+        <div>
+            <table class="table table-striped">
+                <thead>
+                    <th>
+                        Package Name
+                    </th>
+                    <th>
+                        Package Key
+                    </th>
+                    <th>
+                        Package Version
+                    </th>
+                </thead>
+                <tbody>
+                    {% for package in packages %}
+                    <tr>
+                        <td>
+                            <b>{{ package.project_name }}</b>
+                        </td>
+                        <td>
+                            {{ package.key }}
+                        </td>
+                        <td>
+                            {{ package.version }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
-</div>
+        </div>
 
-<br>
-<h3>Api Documentation</h3>
-<div>
-    <li>Swagger used for Api Documentation</li>
-    <li>All api's Listed in Api Documentation Page</li>
-    <li>Check <b>/project/urls.py</b> file for settings used</li>
-    <li>Package used <b>drf-yasg==1.20.0</b></li>
-    <li>Check Api Documentation Page <a href="/api/docs/">Api</a></li>
-</div>
+        <br>
+        <h3>Api Documentation</h3>
+        <div>
+            <li>Swagger used for Api Documentation</li>
+            <li>All api's Listed in Api Documentation Page</li>
+            <li>Check <b>/project/urls.py</b> file for settings used</li>
+            <li>Package used <b>drf-yasg==1.20.0</b></li>
+            <li>Check Api Documentation Page <a href="/api/docs/">Api</a></li>
+        </div>
 
-<br>
-<h3>Login and Logout </h3>
-<div>
-    <li>Used django built-in auth view</li>
-    <li>Check <b>/project/urls.py/</b> for the used views</li>
-    <li>Sample redirect Url in Local settings files <b>/project/local_settings_sample.py</b></li>
-    <li>Check <b>templates/registration/login.html</b> for login html file</li>
-    <li>Check Login url <a href="/login/">Login</a></li>
-</div>
+        <br>
+        <h3>Login and Logout </h3>
+        <div>
+            <li>Used django built-in auth view</li>
+            <li>Check <b>/project/urls.py/</b> for the used views</li>
+            <li>Sample redirect Url in Local settings files <b>/project/local_settings_sample.py</b></li>
+            <li>Check <b>templates/registration/login.html</b> for login html file</li>
+            <li>Check Login url <a href="/login/">Login</a></li>
+        </div>
 
-<br>
-<h3>API Authentication</h3>
-<div>
-    <li>In built DRF Token Authentication Used</li>
-    <li>Check <b>/project/urls.py/</b> for the used views</li>
-    <li>Authentication Class Defined in <b>/project/settings.py</b></li>
-    <li>Check "api-token" in <a href="/api/docs/">API</a></li>
-</div>
+        <br>
+        <h3>API Authentication</h3>
+        <div>
+            <li>In built DRF Token Authentication Used</li>
+            <li>Check <b>/project/urls.py/</b> for the used views</li>
+            <li>Authentication Class Defined in <b>/project/settings.py</b></li>
+            <li>Check "api-token" in <a href="/api/docs/">API</a></li>
+        </div>
 
 
-<br>
-<h3>External sevices urls if used</h3>
-<div>
-    <li>Geoserver used for spatial data managemnt <a href=http://localhost:8600/geoserver>Geoserver</a></li>
-    <li>Postgres gui admin dashboard <a href=http://localhost:5051>pgadmin</a></li>
-</div>
+        <br>
+        <h3>External sevices urls if used</h3>
+        <div>
+            <li>Geoserver used for spatial data managemnt <a href=http://localhost:8600/geoserver>Geoserver</a></li>
+            <li>Postgres gui admin dashboard <a href=http://localhost:5051>pgadmin</a></li>
+        </div>
 
-</div>
-</body>
+        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+            <div class="col-md-4 d-flex align-items-center">
+                
+                <a href="https://naxa.com.np" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
+                    NAXA
+                </a>
+            </div>
+            
+            <ul class="nav col-md-4 justify-content-end list-unstyled d-flex tex-dark">
+                Backend Boilerplate
+            </ul>
+        </footer>
+    </div>
+    </body>
 </html>

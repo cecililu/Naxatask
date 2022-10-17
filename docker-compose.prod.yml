@@ -19,6 +19,13 @@ services:
       - db
     networks:
       - django_nw
+    healthcheck:
+      interval: 1m
+      timeout: 5s
+      retries: 5
+      test:
+        curl http://localhost:8000 || bash -c 'kill -s 15 -1 && (sleep 10; kill -s 9 -1)' #written in a manner that if healthcheck fails every process is killed and container restarts
+      # start_period: 30s
     deploy:
       resources:
         limits:
