@@ -14,7 +14,8 @@ class HomeView(TemplateView):
             "key": i.key,
             "version": i.version,
             "project_name":i.project_name
-        } for i in installed_packages][::-1]
+        } for i in installed_packages]
+        installed_packages_list = sorted(installed_packages_list, key=lambda k: k['key']) 
         return render(request, template_name, {"packages":installed_packages_list})
 
 

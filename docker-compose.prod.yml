@@ -12,7 +12,7 @@ services:
       - ./sock/:/sock/
       - ./:/code
       - ./logs/:/logs/
-    entrypoint: sh entrypoint.sh
+    entrypoint: sh /code/docker-entrypoint.prod.sh
     env_file:
       - env.txt
     depends_on:

@@ -11,7 +11,7 @@ services:
       - .:/code
     ports:
       - "8000:8000"
-    command: sh entrypoint.sh
+    entrypoint: sh /code/docker-entrypoint.local.sh
 
   db:
     image: mdillon/postgis:11-alpine
