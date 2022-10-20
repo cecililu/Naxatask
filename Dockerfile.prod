@@ -20,7 +20,7 @@ COPY requirements.txt /code/
 
 #required for gdal installation
 RUN pip install setuptools==57.5.0
-RUN pip wheel --no-cache-dir --wheel-dir /code/wheels -r requirements.txt
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /code/wheels -r requirements.txt
 
 ###FINAL IMAGE
 FROM naxa/python:3.9-slim-v1
