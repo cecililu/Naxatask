@@ -1,3 +1,4 @@
+curl
 binutils
 libproj-dev
 gettext
