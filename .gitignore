@@ -1,5 +1,6 @@
 # Environments
 .env_pg
+.pg_env
 .env
 .venv
 env/
@@ -165,3 +166,6 @@ dmypy.json
 requirements.txt
 apt_requirements.txt
 apt_requirements.txt
+
+
+uwsgi.*.ini
