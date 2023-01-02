@@ -13,7 +13,7 @@ services:
       - db
     ports:
       - ${WEB_APP_PORT}:8000
-    entrypoint: sh /code/docker-entrypoint.local.sh
+    entrypoint: sh /code/entrypoint.sh
 
   db:
     image: mdillon/postgis:11-alpine

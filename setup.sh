@@ -12,15 +12,15 @@ function createEntrypoint {
     export PROJECT_NAME=$PROJECT_NAME
     echo ""
     if [ $DEPLOY_TYPE -eq 2 ]; then
-        cp -p docker-entrypoint.prod.sh entrypoint.sh
         cp -p docker-compose.prod.yml docker-compose.yml
-        envsubst <docker-compose.yml | tee docker-compose.yml
+        cat docker-compose.yml | envsubst | tee docker-compose.yml
+        cp -p docker-entrypoint.prod.sh entrypoint.sh
+        cat entrypoint.sh | envsubst | tee entrypoint.sh
         cp -p uwsgi.ini uwsgi.$PROJECT_NAME.ini
-        envsubst <entrypoint.sh | tee entrypoint.sh
     else
         cp -p docker-entrypoint.local.sh entrypoint.sh
         cp -p docker-compose.local.yml docker-compose.yml
-        envsubst <docker-compose.yml | tee docker-compose.yml
+        cat docker-compose.yml | envsubst | tee docker-compose.yml
     fi
 }
 
