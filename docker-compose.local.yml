@@ -5,7 +5,7 @@ services:
     env_file: .env   # Change env_sample.txt to env.txt
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     restart: always
     volumes:
       - .:/code
