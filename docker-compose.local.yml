@@ -9,8 +9,10 @@ services:
     restart: always
     volumes:
       - .:/code
+    depends_on:
+      - db
     ports:
-      - "8000:8000"
+      - ${WEB_APP_PORT}:8000
     entrypoint: sh /code/docker-entrypoint.local.sh
 
   db:
@@ -21,4 +23,46 @@ services:
     # ports:
     #   - 5432:5432
     env_file:
-      - pg_env.txt
+      - .pg_env
+
+
+  redis:
+    image: redis:alpine
+    restart: always
+    entrypoint: redis-server --appendonly yes
+    # ports:
+    #   - 6379:6379
+    volumes:
+      - ./_redis_data:/var/lib/redis
+      - ./redis/rc.local:/etc/rc.local
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    entrypoint: "celery -A project worker -f /logs/worker.log -l DEBUG"
+    depends_on:
+      - web
+      - redis
+    volumes:
+      - .:/code
+      - ./logs/:/logs/
+    env_file:
+      - .env
+
+
+  beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    entrypoint: "celery -A project beat -f /logs/worker.log -l DEBUG"
+    depends_on:
+      - web
+      - redis
+    volumes:
+      - .:/code
+      - ./logs/:/logs/
+    env_file:
+      - .env

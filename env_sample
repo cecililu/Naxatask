@@ -9,10 +9,11 @@ SITE_ID=1
 SQL_ENGINE=django.contrib.gis.db.backends.postgis
 DEFAULT_AUTO_FIELD=django.db.models.AutoField
 
-POSTGRES_DB=<name-of-your-database>
-POSTGRES_USER=<postgresql-role-user>
-POSTGRES_PASSWORD=<postgresql-role-password>
-POSTGRES_HOST=<ip-address-or-hostname-of-your-database>
+POSTGRES_USER=postgres
+POSTGRES_DB=naxa_db
+POSTGRES_PASSWORD=postgres
+
+POSTGRES_HOST=db
 POSTGRES_PORT=5432
 
 
