@@ -165,8 +165,8 @@ MEDIA_URL = "/media/"
 SITE_ID = int(os.environ.get("SITE_ID", 1))
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://127.0.0.1:8000/")
 
-CSRF_TRUSTED_ORIGINS = [os.environ.get(
-    "CSRF_TRUSTED_ORIGINS", 'https://*.naxa.com.np,').strip(',')]
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    "CSRF_TRUSTED_ORIGINS", 'https://*.naxa.com.np,').split(',')
 
 DEFAULT_AUTO_FIELD = os.environ.get("DEFAULT_AUTO_FIELD", 'django.db.models.AutoField')
 
