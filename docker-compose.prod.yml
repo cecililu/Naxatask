@@ -40,7 +40,7 @@ services:
     # ports:
     #   - 5432:5432
     env_file:
-      - .pg_env
+      - .db_env
     networks:
       - ${PROJECT_NAME}_nw
     deploy:
@@ -48,6 +48,8 @@ services:
         limits:
           cpus: "0.2"
           memory: "200M"
+
+${FASTAPI_COMPOSE}
 
   redis:
     image: redis:alpine
