@@ -223,3 +223,17 @@ class UserUploadModel(models.Model):
     )
     name = models.CharField(_("Name"), max_length=50)
 ```
+
+## How to read files of S3 with libraries that don't support URL as pandas
+
+```
+import boto3
+import pandas as pd
+s3 = boto3.client('s3', region_name='your_region')
+s3.download_file('your_bucket_name', 'path/to/your/file.csv', 'local_file_name.csv')
+df = pd.read_csv('local_file_name.csv')
+os.remove('local_file_name.csv')
+```
+
+> **Warning**
+> Don't forget to delete the downloaded file once work is complete. It can cause unwanted storage usage on server.
