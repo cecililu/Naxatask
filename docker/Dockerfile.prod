@@ -46,4 +46,4 @@ COPY --from=builder /code/requirements.txt ./
 RUN pip install --no-cache /wheels/*
 
 # COPY . /code	#use volume instead .:/code
-ENTRYPOINT /code/docker-entrypoint.prod.sh
+ENTRYPOINT /code/docker/docker-entrypoint.prod.sh

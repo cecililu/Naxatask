@@ -18,3 +18,7 @@ sock
 logs
 static
 media
+redis
+_redis_data
+mongodb_data
+logs

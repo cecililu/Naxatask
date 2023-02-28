@@ -20,6 +20,9 @@ Please Choose the deployment type:
 2
 Preparing project for Production
 
+Do you want FastAPI integration [y/n]?
+y
+
 Please Choose the project type:
    [1] GIS
    [2] NON-GIS
@@ -27,6 +30,8 @@ Please Choose the project type:
 Preparing project as GIS
 
 Enter port for Web App:
+8001
+Enter port for FastApi App:
 8001
 
 Boilerplate files generated please review following files:
@@ -38,6 +43,8 @@ Boilerplate files generated please review following files:
 run `docker compose up -d`
 
 ```
+
+> You can re run setup if docker-compose.yml was generated blank
 
 ### MANUAL APPROACH
 

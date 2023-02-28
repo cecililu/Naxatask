@@ -92,26 +92,26 @@ function createEntrypoint {
         if [ $NEED_FASTAPI = 'y' ]; then
           export FASTAPI_COMPOSE=`echo "$FASTAPI_PROD_COMPOSE" | envsubst`
         fi
-        cp -p docker-compose.prod.yml docker-compose.yml
+        cp -p docker/docker-compose.prod.yml docker-compose.yml
         cat docker-compose.yml | envsubst | tee docker-compose.yml
-        cp -p docker-entrypoint.prod.sh entrypoint.sh
+        cp -p docker/docker-entrypoint.prod.sh entrypoint.sh
         cat entrypoint.sh | envsubst | tee entrypoint.sh
         cp -p uwsgi.ini uwsgi.$PROJECT_NAME.ini
     else
         if [ $NEED_FASTAPI = 'y' ]; then
           export FASTAPI_COMPOSE=`echo "$FASTAPI_DEV_COMPOSE" | envsubst`
         fi
-        cp -p docker-entrypoint.local.sh entrypoint.sh
-        cp -p docker-compose.local.yml docker-compose.yml
+        cp -p docker/docker-compose.local.yml docker-compose.yml
+        cp -p docker/docker-entrypoint.local.sh entrypoint.sh
         cat docker-compose.yml | envsubst | tee docker-compose.yml
     fi
 }
 
 function makeProject {
     if [ $DEPLOY_TYPE -eq 2 ]; then
-        cp -rp Dockerfile.prod Dockerfile
+        cp -rp docker/Dockerfile.prod Dockerfile
     else
-        cp -rp Dockerfile.dev Dockerfile
+        cp -rp docker/Dockerfile.dev Dockerfile
     fi
     cp -rp env_sample .env
     cp -rp pg_env_sample .db_env
@@ -119,14 +119,14 @@ function makeProject {
 }
 
 function makeGISProject {
-    cp -rp requirements_gis.txt requirements.txt
-    cp -rp apt_requirements_gis.txt apt_requirements.txt
+    cp -rp dependencies/requirements_gis.txt requirements.txt
+    cp -rp dependencies/apt_requirements_gis.txt apt_requirements.txt
     makeProject
 }
 
 function makeNonGISProject {
-    cp -rp requirements_nongis.txt requirements.txt
-    cp -rp apt_requirements_nongis.txt apt_requirements.txt
+    cp -rp dependencies/requirements_nongis.txt requirements.txt
+    cp -rp dependencies/apt_requirements_nongis.txt apt_requirements.txt
     makeProject
 }
 
@@ -185,9 +185,10 @@ readDeploymentType
 readFastAPIIntegration
 readProjectType
 
-echo "Boilerplate files generated please review following files:"
+echo "Boilerplate files generated. Please review following files:"
 echo "  1. .env"
 echo "  2. .pg_env"
 echo "  3. docker-compose.yml"
 echo "  4. entrypoint.sh"
-echo 'run `docker compose up -d`'
+
+echo 'Then run `docker compose up -d`'
