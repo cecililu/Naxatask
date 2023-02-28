@@ -23,7 +23,9 @@ services:
     # ports:
     #   - 5432:5432
     env_file:
-      - .pg_env
+      - .db_env
+
+${FASTAPI_COMPOSE}
 
 
   redis:

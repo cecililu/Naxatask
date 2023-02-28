@@ -20,6 +20,9 @@ Please Choose the deployment type:
 2
 Preparing project for Production
 
+Do you want FastAPI integration [y/n]?
+y
+
 Please Choose the project type:
    [1] GIS
    [2] NON-GIS
@@ -27,6 +30,8 @@ Please Choose the project type:
 Preparing project as GIS
 
 Enter port for Web App:
+8001
+Enter port for FastApi App:
 8001
 
 Boilerplate files generated please review following files:
@@ -38,6 +43,8 @@ Boilerplate files generated please review following files:
 run `docker compose up -d`
 
 ```
+
+> You can re run setup if docker-compose.yml was generated blank
 
 ### MANUAL APPROACH
 
@@ -192,3 +199,27 @@ For viewing logs of your docker services.
       Applying contenttypes.0001_initial... OK
       Applying contenttypes.0002_remove_content_type_name... OK
       Applying auth.0001_initial... OK
+
+## Using Custom Model Fields for S3 storage support
+
+```
+from django.db import models
+from project.storage_backends import S3PrivateMediaStorage, S3PublicMediaStorage
+from django.conf import settings
+from django.utils.translation import gettext_lazy as _
+
+
+# Create your models here.
+class UserUploadModel(models.Model):
+    upload_files = models.FileField(
+        storage=S3PrivateMediaStorage() if settings.USE_S3 else None,
+        null=True,
+        blank=True
+    )
+    upload_public_files = models.FileField(
+        storage=S3PublicMediaStorage() if settings.USE_S3 else None,
+        null=True,
+        blank=True
+    )
+    name = models.CharField(_("Name"), max_length=50)
+```

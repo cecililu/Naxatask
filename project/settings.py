@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY", "xyggedefsdfsdf&g3v(i0+s^*3y")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get("DEBUG", True))
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 
@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "dj_rest_auth",
+    "storages",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.facebook",
     "allauth.socialaccount.providers.google",
@@ -156,11 +157,45 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+### S3 Related Settings
+USE_S3 = os.environ.get("USE_S3","False") == "True"
+PUBLIC_MEDIA_LOCATION = os.environ.get("PUBLIC_MEDIA_LOCATION", "publicuploads")
+PRIVATE_MEDIA_LOCATION = os.environ.get("PRIVATE_MEDIA_LOCATION", "privateuploads")
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
-MEDIA_URL = "/media/"
+if USE_S3:
+    IS_LOCAL = os.environ.get("IS_LOCAL","False") == "True"
+    AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME", "geonadir-prod")
+    AWS_DEFAULT_ACL = os.environ.get("AWS_DEFAULT_ACL", "public-read")
+    AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+    AWS_S3_OBJECT_PARAMETERS = os.environ.get(
+        "AWS_S3_OBJECT_PARAMETERS", {"CacheControl": "max-age=86400"}
+    )
+    AWS_S3_FILE_OVERWRITE=False
+    AWS_S3_SIGNATURE_VERSION = os.environ.get('AWS_S3_SIGNATURE_VERSION','s3v4')
+    AWS_S3_REGION_NAME  = os.environ.get('AWS_S3_REGION_NAME','ap-south-1')
+    # s3 static settings
+    AWS_LOCATION = os.environ.get("AWS_LOCATION", "static")
+    if IS_LOCAL:
+        # setting static files to local path to use debug toolbar
+        STATIC_URL = "/static/"
+        STATIC_ROOT = os.path.join(BASE_DIR, "static")
+    else:
+        STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+        STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    DEFAULT_FILE_STORAGE = "project.storage_backends.S3PublicMediaStorage"
+    PRIVATE_FILE_STORAGE = "project.storage_backends.S3PrivateMediaStorage"
+    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
+    MEDIA_ROOT = os.path.join(BASE_DIR, "privateuploads")
+else:
+    STATIC_URL = "/static/"
+    STATIC_ROOT = os.path.join(BASE_DIR, "static")
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'staticfiles'),)
+
 
 SITE_ID = int(os.environ.get("SITE_ID", 1))
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://127.0.0.1:8000/")

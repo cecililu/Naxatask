@@ -1,6 +1,7 @@
 # Environments
 .env_pg
 .pg_env
+.db_env
 .env
 .venv
 env/
@@ -17,6 +18,8 @@ Dockerfile
 
 #project
 postgres_data/
+mongodb_data/
+pgadmin-data/
 geoserver-data/
 project/local_setting.py
 entrypoint.sh
@@ -33,10 +36,13 @@ media
 frontend_app/
 dist/
 redis-data/
+_redis_data/
+redis/
 
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
+__pycache__
 *.py[cod]
 *$py.class
 
