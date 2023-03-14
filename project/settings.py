@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "drf_yasg",
     "corsheaders",
     "debug_toolbar",
+    "import_export",
     # local apps
     "user",
     "core",

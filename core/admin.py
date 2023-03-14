@@ -1,18 +1,18 @@
 from django.contrib import admin
 from . models import *
 # Register your models here.
-
-class ProjectAdmin(admin.ModelAdmin):
+from import_export.admin import ImportExportMixin
+class ProjectAdmin(ImportExportMixin,admin.ModelAdmin):
     list_display = ('name','time_started')
     # list_filter = ('time_started',)
-
-class OwnerAdmin(admin.ModelAdmin):
+    
+class OwnerAdmin(ImportExportMixin,admin.ModelAdmin):
     list_display=('full_name','email',)
    
-class DepartmentAdmin(admin.ModelAdmin):
+class DepartmentAdmin(ImportExportMixin,admin.ModelAdmin):
     list_display=('name',)
 
-class OwnerProfileAdmin(admin.ModelAdmin):
+class OwnerProfileAdmin(ImportExportMixin,admin.ModelAdmin):
     list_display=('name','is_organization')
     list_filter = ('is_organization',)
 
