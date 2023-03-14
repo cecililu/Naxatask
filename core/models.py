@@ -11,7 +11,7 @@ class ProjectManager(models.Manager):
 #Models
 class Owner(models.Model):
     full_name=models.CharField(max_length=100)
-    mobile_number=models.IntegerField()
+    mobile_number=models.CharField(max_length=10)
     email=models.EmailField(max_length=250) 
 
     def __str__(self):
@@ -19,7 +19,7 @@ class Owner(models.Model):
 
 class Project (models.Model):
     name=models.CharField(max_length=250)
-    time_started=models.CharField(max_length=250)
+    time_started=models.DateField(auto_now=True, auto_now_add=False,blank=True,null=True)
     owner=models.ForeignKey(Owner,on_delete=models.PROTECT,null=True,blank=True)  
 
     objects= ProjectManager()
@@ -35,6 +35,8 @@ class OwnerProfile(models.Model):
     name=models.CharField(max_length=250)
     is_organization=models.BooleanField(default=False)
     # description=models.CharField(max_length=50)
+
+#signal
 @receiver(post_save, sender=Owner)
 def OwnerProfileCreator(sender, instance, **kwargs):
     OwnerProfile(name=instance.full_name).save()

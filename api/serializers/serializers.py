@@ -1,24 +1,23 @@
 from core.models import *
 from rest_framework import serializers
 
-
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project 
-        fields = "__all__"
+        fields = ["name","time_started","owner"]
 
-
-class DepartmentSerializer(serializer.ModelSereializer):
+class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department 
-        fields = "__all__"
+        fields = ["name"]
 
-class OwnerSerializer(serializer.ModelSereializer):
+class OwnerSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Owner
-        fields = "__all__"
+        model =Owner 
+        fields = ["full_name","mobile_number","email"]
 
-class OwnerProfileSerializer(serializer.ModelSereializer):
+
+class OwnerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model=OwnerProfile
-        fields="__all__"
+        fields=["name","is_organization"]
