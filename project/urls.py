@@ -14,7 +14,6 @@ schema_view = get_schema_view(
         default_version='v1',
     ),
 )
-
 urlpatterns = [
     path('', HomeView.as_view()),
     path('admin/', admin.site.urls),

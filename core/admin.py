@@ -16,7 +16,12 @@ class OwnerProfileAdmin(ImportExportMixin,admin.ModelAdmin):
     list_display=('name','is_organization')
     list_filter = ('is_organization',)
 
+class DocumentAdmin(admin.ModelAdmin):
+    readonly_fields = ('date_created','date_updated_on')
+
+
 admin.site.register(Project,ProjectAdmin)
 admin.site.register(Owner,OwnerAdmin)
 admin.site.register(Department,DepartmentAdmin)
 admin.site.register(OwnerProfile,OwnerProfileAdmin)
+admin.site.register(Document,DocumentAdmin)
