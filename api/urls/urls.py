@@ -7,6 +7,7 @@ router.register(r'owners', OwnerView)
 router.register(r'projects', ProjectView)
 router.register(r'departments', DepartmentView)
 
+
 urlpatterns = [
    path('', include(router.urls)),
    path('documents/', DocumentListView.as_view(), name='document-list'),

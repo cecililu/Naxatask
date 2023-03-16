@@ -12,7 +12,6 @@ import json
 from django.http import FileResponse
 from osgeo import ogr,osr
 
-
 class ProjectView(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
@@ -92,7 +91,6 @@ def OwnerviewFunction(request):
     elif request.method=="PATCH":
           owner=Owner.objects.all()
           serializer = OwnerSerializer(instance=owner, data=request.data, partial=True) 
- 
           if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -144,6 +142,9 @@ class DocumentListView(APIView):
         serializer = DocumentSerializer(queryset, many=True)
         return Response(serializer.data)
 
+
+
+
 #helper funnction to compute shapefile and zip it
 def getShapefile(queryset):
    #extracting data from the queryset
@@ -156,14 +157,14 @@ def getShapefile(queryset):
 
    #set up a shapefile driver and data source
    driver=ogr.GetDriverByName("ESRI Shapefile")
-   ds = driver.CreateDataSource("./static/tempshapefile/projectpolygon.shp")   
+   ds = driver.CreateDataSource("./static/projectpolygon.shp")   
    #set up projection system  
    srs=osr.SpatialReference()
    srs.ImportFromEPSG(4326)
    
    #create a layer
    layer=ds.CreateLayer("project",srs,ogr.wkbMultiPolygon) 
-   
+   print("LATER))))))))))))))))0",layer)
    #add a feild
    idField=ogr.FieldDefn("id",ogr.OFTInteger)
    layer.CreateField(idField)
@@ -186,7 +187,6 @@ def getShapefile(queryset):
    feature = None
     # Save and close DataSource
    ds = None
-
 def getZipped():
     filepath=[
         os.path.join('static/tempshapefile/projectpolygon.shp'),

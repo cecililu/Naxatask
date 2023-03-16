@@ -4,10 +4,13 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 
 #Model Manger
+
 class ProjectManager(models.Manager):
-    def changeName(self,name):
-        self.name=name
-        return self.name 
+    def active(self):
+        return self.filter(is_active=True)
+
+    def search(self, search_string):
+        return self.filter(name__icontains=search_string)
 
 #Models
 class Owner(models.Model):
@@ -18,22 +21,25 @@ class Owner(models.Model):
     def __str__(self):
         return self.full_name
 
+class Department(models.Model):
+    name=models.CharField(max_length=250)
+    def __str__(self):
+        return self.name
 
 class Project (models.Model):
     name=models.CharField(max_length=250)
     time_started=models.DateField(auto_now=True, auto_now_add=False,blank=True,null=True)
     owner=models.ForeignKey(Owner,on_delete=models.PROTECT,null=True,blank=True)  
-    site_polygon = models.MultiPolygonField(
-        null=True, default=None,blank=True)
+    site_polygon = models.MultiPolygonField(null=True, default=None,blank=True)
+
     objects= ProjectManager()
     created_by=models.CharField(max_length=250, blank=True, null=True)
+    is_active=models.BooleanField(default=True)
+    department= models.ForeignKey(Department,  on_delete=models.CASCADE,blank=True,null=True)
     
     def __str__(self):
         return self.name
-class Department(models.Model):
-    name=models.CharField(max_length=250)
-    def __str__(self):
-        return self.name
+
 class OwnerProfile(models.Model):
     name=models.CharField(max_length=250)
     is_organization=models.BooleanField(default=False)
