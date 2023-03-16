@@ -24,12 +24,10 @@ class Project (models.Model):
     time_started=models.DateField(auto_now=True, auto_now_add=False,blank=True,null=True)
     owner=models.ForeignKey(Owner,on_delete=models.PROTECT,null=True,blank=True)  
     site_polygon = models.MultiPolygonField(
-        null=True, default=None
-        
-    )
+        null=True, default=None,blank=True)
     objects= ProjectManager()
+    created_by=models.CharField(max_length=250, blank=True, null=True)
     
-    created_by=models.CharField(max_length=length, blank=True, null=True)
     def __str__(self):
         return self.name
 class Department(models.Model):
@@ -40,6 +38,7 @@ class OwnerProfile(models.Model):
     name=models.CharField(max_length=250)
     is_organization=models.BooleanField(default=False)
     # description=models.CharField(max_length=50)
+    
 #signal
 @receiver(post_save, sender=Owner)
 def OwnerProfileCreator(sender, instance, **kwargs):

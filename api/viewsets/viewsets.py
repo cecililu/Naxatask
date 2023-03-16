@@ -6,14 +6,45 @@ from rest_framework.response import Response
 from django.http import FileResponse
 from zipfile import ZipFile
 import os
+from rest_framework import status
+import json
+from django.http import FileResponse
+from osgeo import ogr,osr
 
 class ProjectView(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    
-    def create(self,request):
 
-    
+    def create(self, request, *args, **kwargs):
+        try:
+            serializer=ProjectSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(data={"message":"Success","data":serializer.data},status=status.HTTP_201_CREATED)
+        except Exception  as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST,data={"message":str(e)})
+
+    def update(self, request, *args, **kwargs):
+        partial=kwargs.pop('partial',False)
+        instance = self.get_object()
+        try:
+            serializer = self.serializer_class(instance, data=request.data, partial=partial)        
+            if serializer.is_valid():
+                self.perform_update(serializer)
+                return Response(data={"message":"Success","data":serializer.data},status=status.HTTP_200_OK)
+        except Exception as e:
+                return Response(status=status.HTTP_400_BAD_REQUEST,data={"message":str(e)})
+
+    def delete(self,requesr,*args,**kwargs):
+        
+        try:
+            instance = self.get_object()
+            instance.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+                return Response(status=status.HTTP_400_BAD_REQUEST,data={"message":str(e)})
+
+        
 class OwnerView(viewsets.ModelViewSet):
     queryset=Owner.objects.all()
     serializer_class= OwnerSerializer
@@ -57,9 +88,7 @@ class DocumentListView(APIView):
         return Response(serializer.data)
 
 
-import json
-from django.http import FileResponse
-from osgeo import ogr,osr
+
 
 def getShapefile(queryset):
    #extracting data from the queryset
