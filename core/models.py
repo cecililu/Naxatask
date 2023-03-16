@@ -23,31 +23,27 @@ class Project (models.Model):
     name=models.CharField(max_length=250)
     time_started=models.DateField(auto_now=True, auto_now_add=False,blank=True,null=True)
     owner=models.ForeignKey(Owner,on_delete=models.PROTECT,null=True,blank=True)  
-
     site_polygon = models.MultiPolygonField(
-        null=True, blank=True, default=None
+        null=True, default=None
         
     )
     objects= ProjectManager()
+    
+    created_by=models.CharField(max_length=length, blank=True, null=True)
     def __str__(self):
         return self.name
-
 class Department(models.Model):
     name=models.CharField(max_length=250)
     def __str__(self):
         return self.name
-
 class OwnerProfile(models.Model):
     name=models.CharField(max_length=250)
     is_organization=models.BooleanField(default=False)
     # description=models.CharField(max_length=50)
-
-
 #signal
 @receiver(post_save, sender=Owner)
 def OwnerProfileCreator(sender, instance, **kwargs):
     OwnerProfile(name=instance.full_name).save()
-
 
 class Document(models.Model):
     name = models.CharField(max_length=250)

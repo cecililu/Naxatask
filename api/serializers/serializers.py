@@ -4,8 +4,9 @@ from rest_framework import serializers
 from rest_framework_gis.serializers import GeometryField
 # from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
+
 class ProjectSerializer(serializers.ModelSerializer):
-    site_polygon = GeometryField(required=True)
+    # site_polygon = GeometryField(required=True)
     class Meta:
         model = Project 
         fields = ["id","name","time_started","owner","site_polygon",]
