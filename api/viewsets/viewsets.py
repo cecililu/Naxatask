@@ -11,6 +11,7 @@ import json
 from django.http import FileResponse
 from osgeo import ogr,osr
 
+
 class ProjectView(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
@@ -35,8 +36,7 @@ class ProjectView(viewsets.ModelViewSet):
         except Exception as e:
                 return Response(status=status.HTTP_400_BAD_REQUEST,data={"message":str(e)})
 
-    def delete(self,requesr,*args,**kwargs):
-        
+    def delete(self,requesr,*args,**kwargs):        
         try:
             instance = self.get_object()
             instance.delete()
@@ -44,7 +44,25 @@ class ProjectView(viewsets.ModelViewSet):
         except Exception as e:
                 return Response(status=status.HTTP_400_BAD_REQUEST,data={"message":str(e)})
 
-        
+    def retrieve(self, request, pk=None):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    def list(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.serializer_class(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+
 class OwnerView(viewsets.ModelViewSet):
     queryset=Owner.objects.all()
     serializer_class= OwnerSerializer
@@ -54,12 +72,11 @@ class OwnerProfileView(viewsets.ModelViewSet):
     queryset=OwnerProfile.objects.all()
     serializer_class= OwnerSerializer
 
+
 class DepartmentView(viewsets.ModelViewSet):
     queryset=Department.objects.all()
     serializer_class= DepartmentSerializer
     
-    
-   
 
 class DocumentViewSet(viewsets.ModelViewSet):
     queryset = Document.objects.all()
@@ -87,9 +104,7 @@ class DocumentListView(APIView):
         serializer = DocumentSerializer(queryset, many=True)
         return Response(serializer.data)
 
-
-
-
+#helper funnction to compute shapefile and zip it
 def getShapefile(queryset):
    #extracting data from the queryset
    id=queryset.id
