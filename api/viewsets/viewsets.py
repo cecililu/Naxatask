@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from api.serializers.serializers import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from django.http import FileResponse
 from zipfile import ZipFile
 import os
@@ -15,7 +16,7 @@ from osgeo import ogr,osr
 class ProjectView(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-
+    
     def create(self, request, *args, **kwargs):
         try:
             serializer=ProjectSerializer(data=request.data)
@@ -62,22 +63,61 @@ class ProjectView(viewsets.ModelViewSet):
         self.perform_update(serializer)
         return Response(serializer.data)
 
-
 class OwnerView(viewsets.ModelViewSet):
     queryset=Owner.objects.all()
     serializer_class= OwnerSerializer
+
+@api_view(['GET','POST',"DELETE",'PUT',"PATCH"])
+def OwnerviewFunction(request):
+    pk=request.GET.get("id",False)
+    #get request
+    if request.method == 'GET':
+        if pk==False :
+            owners = Owner.objects.all()
+            serializer = OwnerSerializer(owners, many=True)
+            return Response(data={"data": serializer.data}, status=status.HTTP_200_OK)
+        else:
+            owner = Owner.objects.get(pk=pk)
+            serializer = OwnerSerializer(owner)
+            return Response(data={"data": serializer.data, "message": "ok"}, status=status.HTTP_200_OK)
+    #post request
+    elif request.method=="POST":  
+        serializer=OwnerSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data={"message":"Success","data":serializer.data},status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST,data={"message":"error could not save"})    
+    #patch request
+    elif request.method=="PATCH":
+          owner=Owner.objects.all()
+          serializer = OwnerSerializer(instance=owner, data=request.data, partial=True) 
+ 
+          if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+          else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
+
+
+    #delete request   
+    # elif request.method == 'DELETE':
+    #     if pk is not None:
+    #         owner = Owner.objects.get(pk=pk)
+    #         owner.delete()
+    #         return Response(data={"message": "Owner deleted successfully"}, status=status.HTTP_200_OK)
+    #     else:
+    #         return Response(data={"message": "pk is missing"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class OwnerProfileView(viewsets.ModelViewSet):
     queryset=OwnerProfile.objects.all()
     serializer_class= OwnerSerializer
 
-
 class DepartmentView(viewsets.ModelViewSet):
     queryset=Department.objects.all()
     serializer_class= DepartmentSerializer
     
-
 class DocumentViewSet(viewsets.ModelViewSet):
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer

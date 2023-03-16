@@ -1,9 +1,6 @@
 from core.models import *
 from rest_framework import serializers
-
 from rest_framework_gis.serializers import GeometryField
-# from rest_framework_gis.serializers import GeoFeatureModelSerializer
-
 
 class ProjectSerializer(serializers.ModelSerializer):
     # site_polygon = GeometryField(required=True)
@@ -14,19 +11,17 @@ class ProjectSerializer(serializers.ModelSerializer):
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department 
-        fields = ["name"]
-
+        fields = ["id","name"]
 
 class OwnerSerializer(serializers.ModelSerializer):
     class Meta:
         model =Owner 
-        fields = ["full_name","mobile_number","email"]
-
+        fields = ["id","full_name","mobile_number","email"]
 
 class OwnerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model=OwnerProfile
-        fields=["name","is_organization"]
+        fields=["id","name","is_organization"]
 
 class DocumentSerializer(serializers.ModelSerializer):
     class Meta:

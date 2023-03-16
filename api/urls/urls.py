@@ -11,4 +11,5 @@ urlpatterns = [
    path('', include(router.urls)),
    path('documents/', DocumentListView.as_view(), name='document-list'),
    path('getshapefile/', ProjectShapefileView.as_view(), name='document-list'),
+   path('newowner/',OwnerviewFunction,name="owner")
 ]
