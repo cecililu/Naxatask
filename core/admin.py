@@ -3,8 +3,9 @@ from . models import *
 # Register your models here.
 from import_export.admin import ImportExportMixin
 class ProjectAdmin(ImportExportMixin,admin.ModelAdmin):
-    list_display = ('name','time_started')
-    # list_filter = ('time_started',)
+    list_display = ('name','time_started',"time_started")
+
+    list_filter = ('time_started',"created_by")
     
 class OwnerAdmin(ImportExportMixin,admin.ModelAdmin):
     list_display=('full_name','email',)

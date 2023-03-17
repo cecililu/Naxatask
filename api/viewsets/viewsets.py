@@ -15,15 +15,19 @@ from osgeo import ogr,osr
 class ProjectView(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    
+
     def create(self, request, *args, **kwargs):
         try:
             serializer=ProjectSerializer(data=request.data)
             if serializer.is_valid():
+                serializer.validated_data['created_by'] = request.user
                 serializer.save()
                 return Response(data={"message":"Success","data":serializer.data},status=status.HTTP_201_CREATED)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST,data=serializer.errors)
         except Exception  as e:
             return Response(status=status.HTTP_400_BAD_REQUEST,data={"message":str(e)})
+
 
     def update(self, request, *args, **kwargs):
         partial=kwargs.pop('partial',False)
@@ -36,11 +40,11 @@ class ProjectView(viewsets.ModelViewSet):
         except Exception as e:
                 return Response(status=status.HTTP_400_BAD_REQUEST,data={"message":str(e)})
 
-    def delete(self,requesr,*args,**kwargs):        
+    def delete(self,request,*args,**kwargs):        
         try:
             instance = self.get_object()
             instance.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_200_OK,data={"message":"Project delete successfull"})
         except Exception as e:
                 return Response(status=status.HTTP_400_BAD_REQUEST,data={"message":str(e)})
 
@@ -50,9 +54,11 @@ class ProjectView(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def list(self, request):
+        # queryset=self.get_queryset().values("id","time_started")
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(status=200,data={"data":serializer.data,"message":'Successful'})
+        # return Response(queryset)
     
 
     def partial_update(self, request, *args, **kwargs):
@@ -62,9 +68,11 @@ class ProjectView(viewsets.ModelViewSet):
         self.perform_update(serializer)
         return Response(serializer.data)
 
+
 class OwnerView(viewsets.ModelViewSet):
     queryset=Owner.objects.all()
     serializer_class= OwnerSerializer
+
 
 @api_view(['GET','POST',"DELETE",'PUT',"PATCH"])
 def OwnerviewFunction(request):
@@ -164,7 +172,6 @@ def getShapefile(queryset):
    
    #create a layer
    layer=ds.CreateLayer("project",srs,ogr.wkbMultiPolygon) 
-   print("LATER))))))))))))))))0",layer)
    #add a feild
    idField=ogr.FieldDefn("id",ogr.OFTInteger)
    layer.CreateField(idField)
@@ -208,10 +215,154 @@ class ProjectShapefileView(APIView):
         queryset=Project.objects.get(id=project_id)
         getShapefile(queryset)
         getZipped()
-        print('ok')
+        # print('ok')
         return FileResponse(
             open(os.path.join('./static/tempshapefile/project_shapefile.zip'), 'rb'),
             as_attachment=True,filename='ProjectShapefile.zip')
-                
 
 
+                           
+from user.models import UserProfile
+from user.serializers import UserProfileSerializer,UserSerializer,UserProfileAndDataSerializer
+
+
+@api_view(["GET"])
+def userinformations(request):
+    userid=request.GET.get("id")
+    if User.objects.filter(id=userid).exists():
+        user=User.objects.get(id=userid)
+        userprofile=UserProfile.objects.get(user=user)
+
+        user_serializers=UserProfileAndDataSerializer(userprofile)  
+        # userprofiledata=userprofile.values("user","first_name","last_name","department","project")
+       
+        documents = Document.objects.filter(user=user)
+        documents_serializer = DocumentSerializer(documents, many=True)
+
+        serialized_data = user_serializers.data
+        serialized_data['documents'] = documents_serializer.data 
+        return Response(status=200,data={"message":"success","data":serialized_data})    
+    else:
+        return Response(status=400,data={"message":"user not found"})
+
+
+@api_view(['GET'])
+def getfiles(request):
+    user_id = request.GET.get("user_id")
+    depart_id = request.GET.get('depart_id')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    documents = Document.objects.all()
+
+    if user_id:
+        documents = documents.filter(user=user_id)
+    
+    if depart_id:
+        documents = documents.filter(department=depart_id)
+
+    if start_date and end_date:
+        documents = documents.filter(date_created__range=[start_date, end_date])
+        
+    if documents.exists():
+        documents_serializer = DocumentSerializer(documents, many=True)
+        return Response(status=200, data={"message": "successful", "data": documents_serializer.data})
+    
+    return Response(status=200, data={"message": "No document found", "data": {}})
+
+
+
+
+from django.db.models.functions import TruncMonth, TruncYear
+from django.db.models import Count
+
+@api_view(['GET'])
+def getstats(request):
+    sort_by = request.query_params.get('sort_by', 'desc')
+    if sort_by not in ['asc', 'desc']:
+        return Response({'error': 'Invalid sort_by parameter.'}, status=400)
+
+    project_counts = (
+        Project.objects
+        .annotate(month=TruncMonth('time_started'))
+        .annotate(year=TruncYear('time_started'))
+        .values('month', 'year', 'created_by')
+        .annotate(count=Count('id'))
+        .order_by('-count' if sort_by == 'desc' else 'count')
+    )
+    
+
+    print('project_count',project_counts)
+    data = []
+    for count in project_counts:
+        data.append({
+            'user_id': count['created_by'],
+            'month': count['month'].strftime('%B'),
+            'year': count['year'].year,
+            'count': count['count'],
+        })
+
+    return Response(data,status=200)
+
+@api_view(['GET'])
+def getstats1(request):
+    year = request.query_params.get('year')
+    month = request.query_params.get('month')
+    sort_by = request.query_params.get('sort_by', 'desc')
+    if sort_by not in ['asc', 'desc']:
+        return Response({'error': 'Invalid sort_by parameter.'}, status=400)
+
+    project_counts = (
+        Project.objects
+        .filter(time_started__year=year, time_started__month=month)
+        .values('created_by')
+        .annotate(count=Count('id'))
+        .order_by('-count' if sort_by == 'desc' else 'count')
+    )
+    
+    document_counts = (
+        Document.objects
+        .filter(date_created__year=year, date_created__month=month)
+        .values('user')
+        .annotate(count=Count('id'))
+        .order_by('-count' if sort_by == 'desc' else 'count')
+    )
+    data=[]
+
+    for count in project_counts:
+        user_id = count['created_by']
+        project_count = count['count']
+        document_count = 0
+        
+        for doc_count in document_counts:
+            if doc_count['user'] == user_id:
+                document_count = doc_count['count']
+                break
+        
+        data.append({
+            'user_id': user_id,
+            'project_created_count': project_count,
+            'document_created_count': document_count
+        })
+
+        
+    # data = []
+    # for count in project_counts:
+    #     data.append({
+    #         'user_id': count['created_by'],
+    #         'project_created_count': count['count'],
+          
+    #         # 'document_created_count':
+    #     })
+    # for count in document_counts:
+    
+    #     data.append({
+    #         'user_id': count['user'],
+    #         'document_created_count': count['count'],
+    #         # 'document':1
+    #         # 'document_created_count':
+    #     })
+    # data = {'project_counts': list(project_counts), 'document_counts': list(document_counts)}
+    
+
+    return Response(data,status=200)

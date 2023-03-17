@@ -12,5 +12,10 @@ urlpatterns = [
    path('', include(router.urls)),
    path('documents/', DocumentListView.as_view(), name='document-list'),
    path('getshapefile/', ProjectShapefileView.as_view(), name='document-list'),
-   path('newowner/',OwnerviewFunction,name="owner")
+   path('newowner/',OwnerviewFunction,name="owner"),
+   path('userinfo/',userinformations,name="userinformation"),
+   path('files/',getfiles,name="getfile"),
+   path('userstats/',getstats,name='userstat'),
+   path('userstats1/',getstats1,name='userstat')
+
 ]
