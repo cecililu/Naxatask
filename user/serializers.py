@@ -3,9 +3,10 @@ from django.contrib.auth.models import User
 from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
 from requests.exceptions import HTTPError
-from rest_framework import serializers
+from api.serializers.serializers import *
 
 from user.models import UserProfile
+
 
 try:
     from allauth.account import app_settings as allauth_settings
@@ -34,24 +35,37 @@ class UserSerializer(serializers.ModelSerializer):
                         "date_joined": {"write_only": True, "required": False},
                         }
 
-
 class UserProfileSerializer(serializers.ModelSerializer):
-    is_active = serializers.SerializerMethodField()
-    username = serializers.SerializerMethodField()
-
     class Meta:
         model = UserProfile
-        fields = '__all__'
-
-    def get_is_active(self, obj):
-        status = obj.user.is_active
-        return status
-
-    def get_username(self, obj):
-        username = obj.user.username
-        return username
+        fields=("department","user","first_name",'last_name')
 
 
+from api.serializers.serializers import *
+
+class UserProfileAndDataSerializer(serializers.ModelSerializer):
+    department=DepartmentSerializer()
+    project=ProjectSerializer(many=True)
+    
+    class Meta:
+        model = UserProfile
+        fields=("first_name",'last_name',"project","department")
+
+    # is_active = serializers.SerializerMethodField()
+    # username = serializers.SerializerMethodField()
+
+    # class Meta:
+    #     model = UserProfile
+    #     fields = '__all__'
+
+    # def get_is_active(self, obj):
+    #     status = obj.user.is_active
+    #     return status
+
+    # def get_username(self, obj):
+    #     username = obj.user.username
+    #     return username
+    
 # serializers for social login (facebook and google), remove all code below this if you don't need social login
 class SocialLoginSerializer(serializers.Serializer):
     access_token = serializers.CharField(required=False, allow_blank=True)
