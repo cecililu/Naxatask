@@ -398,7 +398,7 @@ from django.db.models import Count, Min
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-@api_view(['GET'])
+# @api_view(['GET'])
 # def projectSummary2(request):
 #     departments = Department.objects.annotate(
 #         project_count=Count('project'),
