@@ -311,7 +311,7 @@ def getstats1(request):
     sort_by = request.query_params.get('sort_by', 'desc')
     if sort_by not in ['asc', 'desc']:
         return Response({'error': 'Invalid sort_by parameter.'}, status=400)
-
+     
     project_counts = (
         Project.objects
         .filter(time_started__year=year, time_started__month=month)
@@ -345,7 +345,7 @@ def getstats1(request):
             'document_created_count': document_count
         })
 
-        
+
     # data = []
     # for count in project_counts:
     #     data.append({
@@ -364,5 +364,67 @@ def getstats1(request):
     #     })
     # data = {'project_counts': list(project_counts), 'document_counts': list(document_counts)}
     
+    return Response(data={"data":data,"message":"successfull"},status=200)
 
-    return Response(data,status=200)
+
+# from django.db.models import Sum
+from django.db.models import Count, Min,Max
+from django.db.models import Subquery, OuterRef
+
+@api_view(['GET'])
+def projectSummary(request):
+    datas=Department.objects.all().values('name',).annotate(
+        project_count=Count('project'),
+        nearest_deadline= Min('project__deadline'),)
+    for data in datas:
+        if data['nearest_deadline'] is not  None:
+            print( data['nearest_deadline'],"------------" )
+            nearest_project = Project.objects.filter(deadline=data['nearest_deadline'])
+            data['nearest_project'] = nearest_project.values("name",'id',"deadline")
+
+
+    summary = {
+        'total_projects': Project.objects.count(),
+        'total_departments': Department.objects.count()
+    }
+    return Response(data={
+         "data":datas,
+         "summary":summary,
+         "message":"successful"
+                          },status=200)
+
+
+from django.db.models import Count, Min
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+
+@api_view(['GET'])
+# def projectSummary2(request):
+#     departments = Department.objects.annotate(
+#         project_count=Count('project'),
+#         nearest_deadline=Min('project__deadline' )
+#     ).values('name', 'project_count', 'nearest_deadline', 'project__name')
+    
+#     datas = []
+#     for department in departments:
+#         data = {
+#             'department': department['name'],
+#             'project_count': department['project_count'],
+#             'nearest_deadline_project': {
+#                 'name': department['project__name'],
+#                 'nearest_deadline': department['nearest_deadline']
+#             }
+#         }
+
+#     datas.append(data)
+    
+#     summary = {
+#         'total_projects': Project.objects.count(),
+#         'total_departments': Department.objects.count()
+#     }
+
+#     return Response(data={
+#          "data": datas,
+#          "summary": summary,
+#          "message": "success"
+#     }, status=200)

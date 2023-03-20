@@ -32,7 +32,11 @@ class Project (models.Model):
     created_by=models.ForeignKey(User,on_delete=models.PROTECT, blank=True, null=True)
     is_active=models.BooleanField(default=True)
     department= models.ForeignKey(Department,  on_delete=models.CASCADE,blank=True,null=True)
+    
     deadline=models.DateField(blank=True, null=True)
+    
+    manpower = models.IntegerField(blank=True, null=True)
+
     #model manager
     objects= ProjectManager()
 

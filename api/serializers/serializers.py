@@ -5,7 +5,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     # site_polygon = GeometryField(required=True)
     class Meta:
         model = Project 
-        fields = ["id","name","time_started","owner","site_polygon","created_by"]
+        fields = ["id","name","time_started","owner","site_polygon","created_by",'deadline','manpower']
         extra_kwargs={'site_polygon':{'required':True}}
 
 class DepartmentSerializer(serializers.ModelSerializer):

@@ -16,6 +16,8 @@ urlpatterns = [
    path('userinfo/',userinformations,name="userinformation"),
    path('files/',getfiles,name="getfile"),
    path('userstats/',getstats,name='userstat'),
-   path('userstats1/',getstats1,name='userstat')
+   path('userstats1/',getstats1,name='userstat'),
+   path('projectsummary/',projectSummary,name='projectsummary'),
+   # path('projectsummary2/',projectSummary2,name='projectsummary')
 
 ]
