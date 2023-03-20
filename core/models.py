@@ -23,16 +23,19 @@ class Department(models.Model):
     name=models.CharField(max_length=250)
     def __str__(self):
         return self.name
+    
 
+from django.utils import timezone
 class Project (models.Model):
     name=models.CharField(max_length=250)
     time_started=models.DateField(auto_now=True, auto_now_add=False,blank=True,null=True)
     owner=models.ForeignKey(Owner,on_delete=models.PROTECT,null=True,blank=True)  
     site_polygon = models.MultiPolygonField(null=True, default=None,blank=True)
     created_by=models.ForeignKey(User,on_delete=models.PROTECT, blank=True, null=True)
+
     is_active=models.BooleanField(default=True)
-    department= models.ForeignKey(Department,  on_delete=models.CASCADE,blank=True,null=True)
-    
+    department= models.ForeignKey(Department,on_delete=models.CASCADE,blank=True,null=True)
+
     deadline=models.DateField(blank=True, null=True)
     
     manpower = models.IntegerField(blank=True, null=True)
@@ -40,9 +43,17 @@ class Project (models.Model):
     #model manager
     objects= ProjectManager()
 
+    @property
+    def is_recent(self):
+        # print(timezone.now.date(),"---")
+        delta = timezone.now().date() - self.time_started
+        print(delta,'delta')
+        return delta.days <= 7
+
+        # return self.time_started>=(timezone.now() - timezone.timedelta(days=7)).date()
+
     def __str__(self):
         return self.name
-
 
 class OwnerProfile(models.Model):
     name=models.CharField(max_length=250)
@@ -55,7 +66,6 @@ class OwnerProfile(models.Model):
 @receiver(post_save, sender=Owner)
 def OwnerProfileCreator(sender, instance, **kwargs):
     OwnerProfile(name=instance.full_name).save()
-
 
 class Document(models.Model):
     name = models.CharField(max_length=250)

@@ -369,8 +369,7 @@ def getstats1(request):
 
 # from django.db.models import Sum
 from django.db.models import Count, Min,Max
-from django.db.models import Subquery, OuterRef
-
+# from django.db.models import Subquery, OuterRef
 @api_view(['GET'])
 def projectSummary(request):
     datas=Department.objects.all().values('name',).annotate(
