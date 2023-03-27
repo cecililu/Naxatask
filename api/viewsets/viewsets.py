@@ -40,7 +40,7 @@ class ProjectView(viewsets.ModelViewSet):
         except Exception as e:
                 return Response(status=status.HTTP_400_BAD_REQUEST,data={"message":str(e)})
 
-    def delete(self,request,*args,**kwargs):        
+    def destroy(self,request,*args,**kwargs):        
         try:
             instance = self.get_object()
             instance.delete()
@@ -291,7 +291,10 @@ def getstats(request):
         .order_by('-count' if sort_by == 'desc' else 'count')
     )
     
-
+    print(Project.objects
+        .annotate(month=TruncMonth('time_started'))
+        .annotate(year=TruncYear('time_started'))
+        .values('month', 'year', 'created_by'),"-----------------------")
     print('project_count',project_counts)
     data = []
     for count in project_counts:
@@ -392,38 +395,35 @@ def projectSummary(request):
          "message":"successful"
                           },status=200)
 
-
-from django.db.models import Count, Min
-from rest_framework.response import Response
+from django.db.models import Count, Min, Prefetch, Subquery, OuterRef
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 # @api_view(['GET'])
 # def projectSummary2(request):
-#     departments = Department.objects.annotate(
+#     prefetch_project = Prefetch('project_set', queryset=Project.objects.only('name', 'deadline'))
+#     datas = Department.objects.annotate(
 #         project_count=Count('project'),
-#         nearest_deadline=Min('project__deadline' )
-#     ).values('name', 'project_count', 'nearest_deadline', 'project__name')
-    
-#     datas = []
-#     for department in departments:
-#         data = {
-#             'department': department['name'],
-#             'project_count': department['project_count'],
-#             'nearest_deadline_project': {
-#                 'name': department['project__name'],
-#                 'nearest_deadline': department['nearest_deadline']
-#             }
-#         }
+#         nearest_project=Subquery(
+#             prefetch_project.filter(deadline=OuterRef('nearest_deadline')).values('name', 'deadline')[:1]
+#         )
+#     ).values('name', 'project_count', 'nearest_deadline', 'nearest_project')
 
-#     datas.append(data)
-    
 #     summary = {
 #         'total_projects': Project.objects.count(),
 #         'total_departments': Department.objects.count()
 #     }
 
 #     return Response(data={
-#          "data": datas,
-#          "summary": summary,
-#          "message": "success"
+#         "data": datas,
+#         "summary": summary,
+#         "message": "successful"
 #     }, status=200)
+
+
+class ProjectSiteView(viewsets.ModelViewSet):
+    queryset = ProjectSite.objects.all()
+    serializer_class = ProjectSerializer
+
+    def create(self, request, *args, **kwargs):
+        pass

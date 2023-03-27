@@ -2,6 +2,7 @@ from django.contrib.gis.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 #Model Manger
 class ProjectManager(models.Manager):
@@ -25,7 +26,6 @@ class Department(models.Model):
         return self.name
     
 
-from django.utils import timezone
 class Project (models.Model):
     name=models.CharField(max_length=250)
     time_started=models.DateField(auto_now=True, auto_now_add=False,blank=True,null=True)
@@ -60,9 +60,7 @@ class OwnerProfile(models.Model):
     is_organization=models.BooleanField(default=False)
     # user=models.OneToOneField(User, null=False, primary_key=True, verbose_name='Member profile')
     # description=models.CharField(max_length=50)
-
-
-#signal
+    
 @receiver(post_save, sender=Owner)
 def OwnerProfileCreator(sender, instance, **kwargs):
     OwnerProfile(name=instance.full_name).save()
@@ -80,4 +78,15 @@ class Document(models.Model):
     def __str__(self):
         return self.name         
 
-   
+
+class ProjectSite(models.Model): 
+    project=models.ForeignKey(Project,on_delete=models.CASCADE)
+    project_geom=models.GeometryField(null=True,blank=True)
+    user_address_point=models.GeometryField(null=True,blank=True)
+    line_site_user_address=models.GeometryField(null=True,blank=True)
+
+    def __str__(self):
+        return self.project.name
+
+
+# from user.models import UserProfile

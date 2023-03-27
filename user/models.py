@@ -35,7 +35,7 @@ class UserProfile(models.Model):
     way = models.LineStringField(null=True, blank=True, default=None)      
     
     def __str__(self):
-        return str(self.user)
+        return str(self.address_point)+"?"
 
 @receiver(post_save,sender=User)
 def UserProfileCreator(sender, instance, created,**kwargs):
