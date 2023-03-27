@@ -154,10 +154,10 @@ class DocumentListView(APIView):
 
 
 #helper funnction to compute shapefile and zip it
-def getShapefile(queryset):
+def getShapefile(queryset,polyqueryset):
    #extracting data from the queryset
    id=queryset.id
-   wkt=queryset.site_polygon.wkt
+   wkt=polyqueryset.project_geom.wkt
    name_of_project=queryset.name
    owner=queryset.owner
    time_started=queryset.time_started
@@ -213,7 +213,8 @@ class ProjectShapefileView(APIView):
     def get(self,request):
         project_id = request.query_params.get('project_id', None)
         queryset=Project.objects.get(id=project_id)
-        getShapefile(queryset)
+        polyqueryset=ProjectSite.objects.get(project=queryset)
+        getShapefile(queryset,polyqueryset)
         getZipped()
         # print('ok')
         return FileResponse(
