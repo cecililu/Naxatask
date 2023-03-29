@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "corsheaders",
     "debug_toolbar",
     "import_export",
+    #celery
+    'django_celery_results',
     # local apps
     "user",
     "core",
@@ -209,6 +211,34 @@ CSRF_TRUSTED_ORIGINS = os.environ.get(
     "CSRF_TRUSTED_ORIGINS", 'https://*.naxa.com.np,').split(',')
 
 DEFAULT_AUTO_FIELD = os.environ.get("DEFAULT_AUTO_FIELD", 'django.db.models.AutoField')
+
+# CELERY
+#from celery.schedules import crontab
+# import core.tasks
+# CELERY_BEAT_SCHEDULE ={'my_task': {
+#         'task': 'core.tasks.update_system_summary',
+#         'schedule': crontab(minute='*/1'),
+#     },
+# }
+
+# CELERY_IMPORTS = ['core.tasks']
+
+CELERY_BROKER_URL = os.environ.get(
+    'CELERY_BROKER_URL',
+    'redis://redis//')
+
+CELERY_RESULT_BACKEND = 'django-db'
+
+# CELERY_RESULT_BACKEND = 'redis://redis//'
+
+
+# CELERY_TASK_ROUTES = {
+#     'core.tasks.add': {'queue': 'map'},
+# }
+
+# CELERY_TASK_DEFAULT_QUEUE = "test"
+
+CELERY_TIMEZONE = 'Asia/Kathmandu'
 
 try:
     from project.local_settings import *

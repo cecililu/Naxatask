@@ -29,3 +29,4 @@ admin.site.register(OwnerProfile,OwnerProfileAdmin)
 admin.site.register(Document,DocumentAdmin)
 
 admin.site.register(ProjectSite)
+admin.site.register(SystemSummary)

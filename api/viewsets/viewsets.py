@@ -426,5 +426,64 @@ class ProjectSiteView(viewsets.ModelViewSet):
     queryset = ProjectSite.objects.all()
     serializer_class = ProjectSerializer
 
-    def create(self, request, *args, **kwargs):
-        pass
+
+from core.tasks import update_system_summary,add_data,group_projects_by_week
+
+@api_view(['GET'])
+def start_a_queue(request):
+    response=update_system_summary.delay()
+    return Response(data={"id":response.task_id},status=200)
+
+from celery.result import AsyncResult
+from project.celery import app
+
+@api_view(['GET'])
+def get_task_response(request):
+  
+    task_id = request.query_params.get('task_id', None)
+    if task_id is not None:
+        result = AsyncResult(task_id, app=app)
+        print('---results----exectuded')
+        if result.ready(): 
+            print(result, "is result")
+            return Response(data={"message":"ready"},status=200)   
+
+        else:
+            return Response(data={"message":"not-ready"},status=200)
+    else:
+        return Response(data={"error":"send task id"},status=200)   
+   
+@api_view(['GET'])
+def create_dummy(request):
+    response=add_data.delay()
+    return Response(data={"id":response.task_id},status=200)
+
+
+from core.tasks import set_data
+@api_view(['GET'])
+def set_active_status(request):
+    response=set_data.delay()
+    return Response(data={"id":response.task_id},status=200)
+
+
+@api_view(['GET'])
+def group_by_week(request):
+    response=group_projects_by_week.delay()
+    return Response(data={"id":response.task_id},status=200)
+
+
+@api_view(['GET'])
+def group_by_week_response(request):
+
+    task_id = request.query_params.get('task_id', None)
+    if task_id is not None:
+        result = AsyncResult(task_id, app=app)
+        print('---results----exectuded')
+        if result.ready(): 
+            print(result, "is result")
+            return Response(data={"message":"ready","data":result.result},status=200)   
+        else:
+            return Response(data={"message":"not-ready"},status=200)
+    else:
+        return Response(data={"error":"send task id"},status=200)   
+   

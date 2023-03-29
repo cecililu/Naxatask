@@ -25,7 +25,6 @@ class Department(models.Model):
     def __str__(self):
         return self.name
     
-
 class Project (models.Model):
     name=models.CharField(max_length=250)
     time_started=models.DateField(auto_now=True, auto_now_add=False,blank=True,null=True)
@@ -78,7 +77,6 @@ class Document(models.Model):
     def __str__(self):
         return self.name         
 
-
 class ProjectSite(models.Model): 
     project=models.ForeignKey(Project,on_delete=models.CASCADE)
     project_geom=models.GeometryField(null=True,blank=True)
@@ -88,5 +86,16 @@ class ProjectSite(models.Model):
     def __str__(self):
         return self.project.name
 
-
 # from user.models import UserProfile
+class SystemSummary(models.Model):
+    year = models.IntegerField()
+    month = models.IntegerField()
+    total_projects = models.IntegerField(default=0)
+    total_users = models.IntegerField(default=0)
+    # Add other summary fields here as needed
+    
+    # class Meta:
+    #     unique_together = ('year', 'month')
+    
+    def __str__(self):
+        return f"{self.id}-{self.year}-{self.month} Summary"
