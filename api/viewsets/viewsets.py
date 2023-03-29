@@ -40,7 +40,7 @@ class ProjectView(viewsets.ModelViewSet):
         except Exception as e:
                 return Response(status=status.HTTP_400_BAD_REQUEST,data={"message":str(e)})
 
-    def delete(self,request,*args,**kwargs):        
+    def destroy(self,request,*args,**kwargs):        
         try:
             instance = self.get_object()
             instance.delete()
@@ -154,10 +154,10 @@ class DocumentListView(APIView):
 
 
 #helper funnction to compute shapefile and zip it
-def getShapefile(queryset):
+def getShapefile(queryset,polyqueryset):
    #extracting data from the queryset
    id=queryset.id
-   wkt=queryset.site_polygon.wkt
+   wkt=polyqueryset.project_geom.wkt
    name_of_project=queryset.name
    owner=queryset.owner
    time_started=queryset.time_started
@@ -213,7 +213,8 @@ class ProjectShapefileView(APIView):
     def get(self,request):
         project_id = request.query_params.get('project_id', None)
         queryset=Project.objects.get(id=project_id)
-        getShapefile(queryset)
+        polyqueryset=ProjectSite.objects.get(project=queryset)
+        getShapefile(queryset,polyqueryset)
         getZipped()
         # print('ok')
         return FileResponse(
@@ -291,7 +292,10 @@ def getstats(request):
         .order_by('-count' if sort_by == 'desc' else 'count')
     )
     
-
+    print(Project.objects
+        .annotate(month=TruncMonth('time_started'))
+        .annotate(year=TruncYear('time_started'))
+        .values('month', 'year', 'created_by'),"-----------------------")
     print('project_count',project_counts)
     data = []
     for count in project_counts:
@@ -392,38 +396,94 @@ def projectSummary(request):
          "message":"successful"
                           },status=200)
 
-
-from django.db.models import Count, Min
-from rest_framework.response import Response
+from django.db.models import Count, Min, Prefetch, Subquery, OuterRef
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 # @api_view(['GET'])
 # def projectSummary2(request):
-#     departments = Department.objects.annotate(
+#     prefetch_project = Prefetch('project_set', queryset=Project.objects.only('name', 'deadline'))
+#     datas = Department.objects.annotate(
 #         project_count=Count('project'),
-#         nearest_deadline=Min('project__deadline' )
-#     ).values('name', 'project_count', 'nearest_deadline', 'project__name')
-    
-#     datas = []
-#     for department in departments:
-#         data = {
-#             'department': department['name'],
-#             'project_count': department['project_count'],
-#             'nearest_deadline_project': {
-#                 'name': department['project__name'],
-#                 'nearest_deadline': department['nearest_deadline']
-#             }
-#         }
+#         nearest_project=Subquery(
+#             prefetch_project.filter(deadline=OuterRef('nearest_deadline')).values('name', 'deadline')[:1]
+#         )
+#     ).values('name', 'project_count', 'nearest_deadline', 'nearest_project')
 
-#     datas.append(data)
-    
 #     summary = {
 #         'total_projects': Project.objects.count(),
 #         'total_departments': Department.objects.count()
 #     }
 
 #     return Response(data={
-#          "data": datas,
-#          "summary": summary,
-#          "message": "success"
+#         "data": datas,
+#         "summary": summary,
+#         "message": "successful"
 #     }, status=200)
+
+
+class ProjectSiteView(viewsets.ModelViewSet):
+    queryset = ProjectSite.objects.all()
+    serializer_class = ProjectSerializer
+
+
+from core.tasks import update_system_summary,add_data,group_projects_by_week
+
+@api_view(['GET'])
+def start_a_queue(request):
+    response=update_system_summary.delay()
+    return Response(data={"id":response.task_id},status=200)
+
+from celery.result import AsyncResult
+from project.celery import app
+
+@api_view(['GET'])
+def get_task_response(request):
+  
+    task_id = request.query_params.get('task_id', None)
+    if task_id is not None:
+        result = AsyncResult(task_id, app=app)
+        print('---results----exectuded')
+        if result.ready(): 
+            print(result, "is result")
+            return Response(data={"message":"ready"},status=200)   
+
+        else:
+            return Response(data={"message":"not-ready"},status=200)
+    else:
+        return Response(data={"error":"send task id"},status=200)   
+   
+@api_view(['GET'])
+def create_dummy(request):
+    response=add_data.delay()
+    return Response(data={"id":response.task_id},status=200)
+
+
+from core.tasks import set_data
+@api_view(['GET'])
+def set_active_status(request):
+    response=set_data.delay()
+    return Response(data={"id":response.task_id},status=200)
+
+
+@api_view(['GET'])
+def group_by_week(request):
+    response=group_projects_by_week.delay()
+    return Response(data={"id":response.task_id},status=200)
+
+
+@api_view(['GET'])
+def group_by_week_response(request):
+
+    task_id = request.query_params.get('task_id', None)
+    if task_id is not None:
+        result = AsyncResult(task_id, app=app)
+        print('---results----exectuded')
+        if result.ready(): 
+            print(result, "is result")
+            return Response(data={"message":"ready","data":result.result},status=200)   
+        else:
+            return Response(data={"message":"not-ready"},status=200)
+    else:
+        return Response(data={"error":"send task id"},status=200)   
+   
